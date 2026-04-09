@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">¡Wey Ya!</string>
+
+    <!-- Main Screen -->
+    <string name="protection_active">Protección activa</string>
+    <string name="protection_off">Desactivado</string>
+    <string name="mode_unknown">Solo desconocidos</string>
+    <string name="mode_all">Bloquear todo</string>
+    <string name="status_unknown">Protección activa — Solo desconocidos</string>
+    <string name="status_all">Modo total — Solo urgencias pasan</string>
+    <string name="status_off">Desactivado</string>
+    <string name="blocked_today">Hoy: %d bloqueadas</string>
+    <string name="blocked_this_week">Esta semana: %d</string>
+    <string name="last_blocked">Última bloqueada</string>
+    <string name="ago_format">hace %s</string>
+
+    <!-- Role Request -->
+    <string name="role_needed_title">Activar protección</string>
+    <string name="role_needed_description">¡Wey Ya! necesita ser tu app de filtrado de llamadas para poder bloquear números desconocidos.</string>
+    <string name="role_needed_button">Activar</string>
+
+    <!-- Settings -->
+    <string name="settings">Ajustes</string>
+    <string name="persistence_section">Persistencia</string>
+    <string name="threshold_label">Dejar pasar después de %d intentos</string>
+    <string name="window_label">En una ventana de %d minutos</string>
+    <string name="schedules_section">Horarios</string>
+    <string name="add_schedule">Agregar horario</string>
+    <string name="no_schedules_hint">Sin horarios = bloquea 24/7 cuando está activo</string>
+    <string name="whitelist_section">Whitelist</string>
+    <string name="add_to_whitelist">Agregar número</string>
+    <string name="data_section">Datos</string>
+    <string name="clear_history">Limpiar historial</string>
+    <string name="export_csv">Exportar log (CSV)</string>
+
+    <!-- Log -->
+    <string name="call_log">Historial</string>
+    <string name="attempts_format">%d intentos</string>
+    <string name="add_whitelist_action">Agregar a whitelist</string>
+    <string name="filter_today">Hoy</string>
+    <string name="filter_week">7 días</string>
+    <string name="filter_month">30 días</string>
+    <string name="filter_all">Todo</string>
+
+    <!-- Privacy Dashboard -->
+    <string name="privacy_dashboard">Privacidad</string>
+    <string name="zero_bytes">0 bytes enviados a internet. Nunca.</string>
+    <string name="total_blocked">Llamadas bloqueadas: %d total (%d este mes)</string>
+    <string name="urgency_allowed">Llamadas de urgencia permitidas: %d</string>
+    <string name="days_protecting">Días protegiéndote: %d</string>
+    <string name="permission_contacts">Contactos — para identificar conocidos</string>
+    <string name="permission_phone">Teléfono — para filtrar llamadas</string>
+    <string name="permission_no_internet">Internet — NO solicitado</string>
+    <string name="permission_no_location">Ubicación — NO solicitado</string>
+    <string name="permission_no_storage">Almacenamiento — NO solicitado</string>
+    <string name="permission_no_camera">Cámara/Micrófono — NO solicitado</string>
+
+    <!-- Quick Tile -->
+    <string name="tile_label">¡Wey Ya!</string>
+
+    <!-- General -->
+    <string name="hidden_number">Número oculto</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="delete">Eliminar</string>
+</resources>
