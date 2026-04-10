@@ -12,7 +12,7 @@ class CallAttemptTracker @Inject constructor() {
     fun recordAndCount(phoneNumber: String, windowMinutes: Int): Int {
         val now = System.currentTimeMillis()
         val cutoff = now - (windowMinutes * 60_000L)
-        val list = attempts.getOrPut(phoneNumber) { mutableListOf() }
+        val list = attempts.computeIfAbsent(phoneNumber) { mutableListOf() }
         synchronized(list) {
             list.removeAll { it < cutoff }
             list.add(now)
@@ -25,6 +25,10 @@ class CallAttemptTracker @Inject constructor() {
         val list = attempts[phoneNumber] ?: return 0
         synchronized(list) {
             list.removeAll { it < cutoff }
+            if (list.isEmpty()) {
+                attempts.remove(phoneNumber)
+                return 0
+            }
             return list.size
         }
     }

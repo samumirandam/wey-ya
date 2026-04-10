@@ -65,15 +65,39 @@ class ScheduleCheckerTest {
     }
 
     @Test
-    fun `midnight-crossing schedule after midnight`() {
-        // April 10, 2026 = Friday (dayOfWeek=5)
-        // Schedule on Friday 22:00-07:00 — at 02:00 Friday morning we're in range
-        val friday = scheduleFor(dayOfWeek = 5, start = "22:00", end = "07:00")
+    fun `midnight-crossing schedule after midnight same day`() {
+        // Schedule on Thursday(4) 22:00-07:00, means Thu 22:00 → Fri 07:00
+        // At Friday 02:00, yesterday was Thursday (day=4) → in range
+        val thursday = scheduleFor(dayOfWeek = 4, start = "22:00", end = "07:00")
         val result = checker.isBlockingActive(
-            listOf(friday),
+            listOf(thursday),
             LocalDateTime.of(2026, 4, 10, 2, 0), // Friday 02:00
         )
         assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `midnight-crossing schedule active on next day AM`() {
+        // Schedule on Monday(1) 22:00-07:00
+        // At Tuesday 03:00, yesterday was Monday → should be active
+        val monday = scheduleFor(dayOfWeek = 1, start = "22:00", end = "07:00")
+        val result = checker.isBlockingActive(
+            listOf(monday),
+            LocalDateTime.of(2026, 4, 7, 3, 0), // Tuesday April 7 2026 03:00
+        )
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `midnight-crossing schedule NOT active on wrong day AM`() {
+        // Schedule on Monday(1) 22:00-07:00
+        // At Wednesday 03:00, yesterday was Tuesday → NOT active
+        val monday = scheduleFor(dayOfWeek = 1, start = "22:00", end = "07:00")
+        val result = checker.isBlockingActive(
+            listOf(monday),
+            LocalDateTime.of(2026, 4, 8, 3, 0), // Wednesday April 8 03:00
+        )
+        assertThat(result).isFalse()
     }
 
     @Test

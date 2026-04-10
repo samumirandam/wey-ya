@@ -28,7 +28,7 @@ class CallDecisionEngineTest {
             attemptThreshold = 3,
             windowMinutes = 5,
         )
-        assertThat(result).isEqualTo(CallDecision.Allow)
+        assertThat(result).isEqualTo(CallDecision.Allow())
     }
 
     @Test
@@ -42,7 +42,7 @@ class CallDecisionEngineTest {
             attemptThreshold = 3,
             windowMinutes = 5,
         )
-        assertThat(result).isEqualTo(CallDecision.Allow)
+        assertThat(result).isEqualTo(CallDecision.Allow())
     }
 
     @Test
@@ -56,7 +56,7 @@ class CallDecisionEngineTest {
             attemptThreshold = 3,
             windowMinutes = 5,
         )
-        assertThat(result).isEqualTo(CallDecision.Allow)
+        assertThat(result).isEqualTo(CallDecision.Allow())
     }
 
     @Test
@@ -98,7 +98,7 @@ class CallDecisionEngineTest {
             attemptThreshold = 3,
             windowMinutes = 5,
         )
-        assertThat(result).isEqualTo(CallDecision.Allow)
+        assertThat(result).isEqualTo(CallDecision.Allow())
     }
 
     @Test
@@ -144,7 +144,7 @@ class CallDecisionEngineTest {
             attemptThreshold = threshold,
             windowMinutes = 5,
         )
-        assertThat(result).isEqualTo(CallDecision.Allow)
+        assertThat(result).isEqualTo(CallDecision.Allow("bypass"))
     }
 
     @Test
@@ -152,28 +152,71 @@ class CallDecisionEngineTest {
         val phone = "+5215500000000"
         val threshold = 2
 
-        // First attempt rejected
-        engine.decide(
+        // First attempt rejected (not whitelisted, ALL mode blocks everyone)
+        val r1 = engine.decide(
             isActive = true,
             mode = BlockingMode.ALL_CALLERS,
             phoneNumber = phone,
             isContact = true,
-            isWhitelisted = true,
+            isWhitelisted = false,
             attemptThreshold = threshold,
             windowMinutes = 5,
         )
+        assertThat(r1).isInstanceOf(CallDecision.Reject::class.java)
 
         // Second attempt should bypass
-        val result = engine.decide(
+        val r2 = engine.decide(
             isActive = true,
             mode = BlockingMode.ALL_CALLERS,
             phoneNumber = phone,
             isContact = true,
-            isWhitelisted = true,
+            isWhitelisted = false,
             attemptThreshold = threshold,
             windowMinutes = 5,
         )
-        assertThat(result).isEqualTo(CallDecision.Allow)
+        assertThat(r2).isEqualTo(CallDecision.Allow("bypass"))
+    }
+
+    @Test
+    fun `threshold of 1 allows on first attempt`() {
+        val result = engine.decide(
+            isActive = true,
+            mode = BlockingMode.UNKNOWN_CALLERS,
+            phoneNumber = "+5215512345678",
+            isContact = false,
+            isWhitelisted = false,
+            attemptThreshold = 1,
+            windowMinutes = 5,
+        )
+        assertThat(result).isEqualTo(CallDecision.Allow("bypass"))
+    }
+
+    @Test
+    fun `allow has bypass reason when persistence threshold reached`() {
+        val phone = "+5215512345678"
+        // First two attempts rejected
+        repeat(2) {
+            engine.decide(
+                isActive = true,
+                mode = BlockingMode.UNKNOWN_CALLERS,
+                phoneNumber = phone,
+                isContact = false,
+                isWhitelisted = false,
+                attemptThreshold = 3,
+                windowMinutes = 5,
+            )
+        }
+        // Third attempt triggers bypass
+        val result = engine.decide(
+            isActive = true,
+            mode = BlockingMode.UNKNOWN_CALLERS,
+            phoneNumber = phone,
+            isContact = false,
+            isWhitelisted = false,
+            attemptThreshold = 3,
+            windowMinutes = 5,
+        )
+        assertThat(result).isEqualTo(CallDecision.Allow("bypass"))
     }
 
     @Test
@@ -188,7 +231,7 @@ class CallDecisionEngineTest {
             windowMinutes = 5,
             isWithinSchedule = false,
         )
-        assertThat(result).isEqualTo(CallDecision.Allow)
+        assertThat(result).isEqualTo(CallDecision.Allow())
     }
 
     @Test

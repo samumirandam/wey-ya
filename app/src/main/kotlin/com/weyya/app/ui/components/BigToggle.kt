@@ -23,7 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.weyya.app.R
 import com.weyya.app.domain.model.BlockingMode
 import com.weyya.app.ui.theme.WeyYaGreen
 import com.weyya.app.ui.theme.WeyYaOrange
@@ -78,7 +80,7 @@ fun BigToggle(
     ) {
         Icon(
             imageVector = Icons.Filled.Shield,
-            contentDescription = if (isActive) "Desactivar protección" else "Activar protección",
+            contentDescription = stringResource(if (isActive) R.string.toggle_deactivate else R.string.toggle_activate),
             modifier = Modifier.size(100.dp),
             tint = iconColor,
         )

@@ -21,20 +21,20 @@ class ScheduleChecker @Inject constructor() {
         val todayIso = now.dayOfWeek.value // 1=Monday … 7=Sunday
         val currentTime = now.toLocalTime()
 
+        val yesterdayIso = now.minusDays(1).dayOfWeek.value
+
         return enabled.any { schedule ->
-            todayIso in schedule.daysList() && isTimeInRange(currentTime, schedule.startTime, schedule.endTime)
-        }
-    }
+            val startTime = LocalTime.parse(schedule.startTime)
+            val endTime = LocalTime.parse(schedule.endTime)
+            val crossesMidnight = endTime <= startTime
 
-    private fun isTimeInRange(current: LocalTime, start: String, end: String): Boolean {
-        val startTime = LocalTime.parse(start)
-        val endTime = LocalTime.parse(end)
-
-        return if (endTime > startTime) {
-            current in startTime..endTime
-        } else {
-            // Crosses midnight: e.g. 22:00-07:00
-            current >= startTime || current <= endTime
+            if (crossesMidnight) {
+                // PM part: today's day + time >= start. AM part: yesterday's day + time <= end.
+                (todayIso in schedule.daysList() && currentTime >= startTime) ||
+                    (yesterdayIso in schedule.daysList() && currentTime <= endTime)
+            } else {
+                todayIso in schedule.daysList() && currentTime in startTime..endTime
+            }
         }
     }
 }

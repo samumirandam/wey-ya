@@ -13,8 +13,9 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import com.weyya.app.R
+import com.weyya.app.util.TimeUtils
 import kotlinx.coroutines.flow.first
-import java.util.Calendar
 
 data class WidgetState(
     val isActive: Boolean,
@@ -39,11 +40,11 @@ object WidgetDataHelper {
         val prefs = ep.userPreferences()
         val isActive = prefs.isActive.first()
         val mode = prefs.blockingMode.first()
-        val blockedToday = ep.blockedCallDao().getBlockedCountSince(todayStartMillis()).first()
+        val blockedToday = ep.blockedCallDao().getBlockedCountSince(TimeUtils.todayStartMillis()).first()
 
         val modeName = when (mode) {
-            BlockingMode.UNKNOWN_CALLERS -> "Desconocidos"
-            BlockingMode.ALL_CALLERS -> "Bloquear todo"
+            BlockingMode.UNKNOWN_CALLERS -> context.getString(R.string.mode_unknown)
+            BlockingMode.ALL_CALLERS -> context.getString(R.string.mode_all)
         }
 
         return WidgetState(isActive, modeName, blockedToday)
@@ -55,12 +56,4 @@ object WidgetDataHelper {
         prefs.setActive(!current)
     }
 
-    private fun todayStartMillis(): Long {
-        val cal = Calendar.getInstance()
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
-        return cal.timeInMillis
-    }
 }

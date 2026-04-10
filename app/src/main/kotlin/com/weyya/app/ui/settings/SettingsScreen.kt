@@ -2,6 +2,7 @@ package com.weyya.app.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,9 +11,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -37,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +50,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -58,8 +63,6 @@ import com.weyya.app.data.db.entity.ScheduleEntity
 import com.weyya.app.data.db.entity.WhitelistEntity
 import kotlin.math.roundToInt
 
-private val dayNames = listOf("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -71,6 +74,8 @@ fun SettingsScreen(
     val schedules by viewModel.schedules.collectAsStateWithLifecycle()
     val whitelist by viewModel.whitelist.collectAsStateWithLifecycle()
 
+    val dayNames = stringArrayResource(R.array.day_abbreviations).toList()
+
     var showAddDialog by remember { mutableStateOf(false) }
     var editingSchedule by remember { mutableStateOf<ScheduleEntity?>(null) }
     var showAddWhitelistDialog by remember { mutableStateOf(false) }
@@ -81,7 +86,7 @@ fun SettingsScreen(
                 title = { Text(stringResource(R.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.navigate_back))
                     }
                 },
             )
@@ -91,7 +96,8 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 24.dp)
+                .windowInsetsPadding(WindowInsets.navigationBars),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             // --- Persistence section ---
@@ -100,26 +106,32 @@ fun SettingsScreen(
             }
 
             item {
+                var localThreshold by remember { mutableIntStateOf(threshold) }
+                LaunchedEffect(threshold) { localThreshold = threshold }
                 Text(
-                    text = stringResource(R.string.threshold_label, threshold),
+                    text = stringResource(R.string.threshold_label, localThreshold),
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Slider(
-                    value = threshold.toFloat(),
-                    onValueChange = { viewModel.setThreshold(it.roundToInt()) },
+                    value = localThreshold.toFloat(),
+                    onValueChange = { localThreshold = it.roundToInt() },
+                    onValueChangeFinished = { viewModel.setThreshold(localThreshold) },
                     valueRange = 2f..5f,
                     steps = 2,
                 )
             }
 
             item {
+                var localWindow by remember { mutableIntStateOf(windowMinutes) }
+                LaunchedEffect(windowMinutes) { localWindow = windowMinutes }
                 Text(
-                    text = stringResource(R.string.window_label, windowMinutes),
+                    text = stringResource(R.string.window_label, localWindow),
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Slider(
-                    value = windowMinutes.toFloat(),
-                    onValueChange = { viewModel.setWindowMinutes(it.roundToInt()) },
+                    value = localWindow.toFloat(),
+                    onValueChange = { localWindow = it.roundToInt() },
+                    onValueChangeFinished = { viewModel.setWindowMinutes(localWindow) },
                     valueRange = 3f..10f,
                     steps = 6,
                 )
@@ -153,6 +165,7 @@ fun SettingsScreen(
             items(schedules, key = { it.id }) { schedule ->
                 ScheduleItem(
                     schedule = schedule,
+                    dayNames = dayNames,
                     onToggle = { viewModel.toggleSchedule(schedule) },
                     onDelete = { viewModel.deleteSchedule(schedule) },
                     onEdit = { editingSchedule = schedule },
@@ -198,6 +211,7 @@ fun SettingsScreen(
     if (showAddDialog) {
         ScheduleDialog(
             title = stringResource(R.string.add_schedule),
+            dayNames = dayNames,
             onDismiss = { showAddDialog = false },
             onConfirm = { entity ->
                 viewModel.addSchedule(entity)
@@ -219,6 +233,7 @@ fun SettingsScreen(
     editingSchedule?.let { schedule ->
         ScheduleDialog(
             title = stringResource(R.string.edit_schedule),
+            dayNames = dayNames,
             initialDays = schedule.daysList().toSet(),
             initialStartHour = schedule.startTime.substringBefore(":").toInt(),
             initialStartMinute = schedule.startTime.substringAfter(":").toInt(),
@@ -250,6 +265,7 @@ private fun SectionHeader(text: String) {
 @Composable
 private fun ScheduleItem(
     schedule: ScheduleEntity,
+    dayNames: List<String>,
     onToggle: () -> Unit,
     onDelete: () -> Unit,
     onEdit: () -> Unit,
@@ -302,6 +318,7 @@ private fun ScheduleItem(
 @Composable
 private fun ScheduleDialog(
     title: String,
+    dayNames: List<String>,
     initialDays: Set<Int> = emptySet(),
     initialStartHour: Int = 22,
     initialStartMinute: Int = 0,

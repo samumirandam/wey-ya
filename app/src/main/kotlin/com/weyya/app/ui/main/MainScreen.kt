@@ -15,10 +15,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
@@ -74,6 +80,7 @@ fun MainScreen(
     val totalBlocked by viewModel.totalBlocked.collectAsStateWithLifecycle()
     val hasRole by viewModel.hasScreeningRole.collectAsStateWithLifecycle()
     val isWithinSchedule by viewModel.isWithinSchedule.collectAsStateWithLifecycle()
+    val batteryDismissed by viewModel.batteryDismissed.collectAsStateWithLifecycle()
 
     val roleManager = context.getSystemService(Context.ROLE_SERVICE) as RoleManager
     val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -146,7 +153,9 @@ fun MainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 24.dp)
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (!hasRole) {
@@ -214,10 +223,15 @@ fun MainScreen(
                     PermissionDeniedCard(context)
                 }
 
-                if (batteryOptimized) {
+                if (batteryOptimized && !batteryDismissed) {
                     Spacer(Modifier.height(16.dp))
-                    BatteryOptimizationCard(context)
+                    BatteryOptimizationCard(
+                        context = context,
+                        onDismiss = { viewModel.dismissBattery() },
+                    )
                 }
+
+                Spacer(Modifier.height(24.dp))
             }
         }
     }
@@ -301,7 +315,7 @@ private fun PermissionDeniedCard(context: Context) {
 }
 
 @Composable
-private fun BatteryOptimizationCard(context: Context) {
+private fun BatteryOptimizationCard(context: Context, onDismiss: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -309,10 +323,19 @@ private fun BatteryOptimizationCard(context: Context) {
         ),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = stringResource(R.string.battery_optimization_title),
-                style = MaterialTheme.typography.titleMedium,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.battery_optimization_title),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                IconButton(onClick = onDismiss) {
+                    Icon(Icons.Filled.Close, contentDescription = null, modifier = Modifier.padding(0.dp))
+                }
+            }
             Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.battery_optimization_description),

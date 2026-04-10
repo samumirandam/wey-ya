@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -28,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -56,22 +58,20 @@ fun LogScreen(
     val filter by viewModel.filter.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    val filteredCalls by remember(allCalls, filter) {
-        derivedStateOf {
-            val cutoff = filter.daysBack?.let { days ->
-                val cal = Calendar.getInstance()
-                if (days == 0) {
-                    cal.set(Calendar.HOUR_OF_DAY, 0)
-                    cal.set(Calendar.MINUTE, 0)
-                    cal.set(Calendar.SECOND, 0)
-                    cal.set(Calendar.MILLISECOND, 0)
-                } else {
-                    cal.add(Calendar.DAY_OF_YEAR, -days)
-                }
-                cal.timeInMillis
+    val filteredCalls = remember(allCalls, filter) {
+        val cutoff = filter.daysBack?.let { days ->
+            val cal = Calendar.getInstance()
+            if (days == 0) {
+                cal.set(Calendar.HOUR_OF_DAY, 0)
+                cal.set(Calendar.MINUTE, 0)
+                cal.set(Calendar.SECOND, 0)
+                cal.set(Calendar.MILLISECOND, 0)
+            } else {
+                cal.add(Calendar.DAY_OF_YEAR, -days)
             }
-            if (cutoff != null) allCalls.filter { it.timestamp >= cutoff } else allCalls
+            cal.timeInMillis
         }
+        if (cutoff != null) allCalls.filter { it.timestamp >= cutoff } else allCalls
     }
 
     val csvLauncher = rememberLauncherForActivityResult(
@@ -79,7 +79,7 @@ fun LogScreen(
     ) { uri ->
         if (uri != null) {
             viewModel.exportCsv(context, uri, filteredCalls)
-            Toast.makeText(context, "CSV exportado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.csv_exported), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -89,7 +89,7 @@ fun LogScreen(
                 title = { Text(stringResource(R.string.call_log)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.navigate_back))
                     }
                 },
                 actions = {
@@ -105,7 +105,8 @@ fun LogScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
+                .padding(padding)
+                .windowInsetsPadding(WindowInsets.navigationBars),
         ) {
             // Filter chips
             Row(

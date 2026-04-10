@@ -29,6 +29,7 @@ class UserPreferences @Inject constructor(
         val ATTEMPT_THRESHOLD = intPreferencesKey("attempt_threshold")
         val TIME_WINDOW_MINUTES = intPreferencesKey("time_window_minutes")
         val FIRST_ACTIVATION_DATE = longPreferencesKey("first_activation_date")
+        val BATTERY_DISMISSED = booleanPreferencesKey("battery_dismissed")
     }
 
     val isActive: Flow<Boolean> = context.dataStore.data
@@ -45,6 +46,9 @@ class UserPreferences @Inject constructor(
 
     val firstActivationDate: Flow<Long?> = context.dataStore.data
         .map { it[Keys.FIRST_ACTIVATION_DATE] }
+
+    val batteryDismissed: Flow<Boolean> = context.dataStore.data
+        .map { it[Keys.BATTERY_DISMISSED] ?: false }
 
     suspend fun setActive(active: Boolean) {
         context.dataStore.edit { prefs ->
@@ -65,5 +69,9 @@ class UserPreferences @Inject constructor(
 
     suspend fun setTimeWindowMinutes(minutes: Int) {
         context.dataStore.edit { it[Keys.TIME_WINDOW_MINUTES] = minutes }
+    }
+
+    suspend fun setBatteryDismissed(dismissed: Boolean) {
+        context.dataStore.edit { it[Keys.BATTERY_DISMISSED] = dismissed }
     }
 }

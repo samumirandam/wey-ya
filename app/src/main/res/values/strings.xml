@@ -88,6 +88,34 @@
     <string name="battery_optimization_button">Desactivar</string>
     <string name="battery_oem_help">¿Tu teléfono sigue cerrando la app?</string>
 
+    <!-- Toggle -->
+    <string name="toggle_activate">Activar protección</string>
+    <string name="toggle_deactivate">Desactivar protección</string>
+
+    <!-- Stats -->
+    <string name="total_stat">Total: %d</string>
+
+    <!-- Widget -->
+    <string name="widget_on">Activo</string>
+    <string name="widget_off">Inactivo</string>
+
+    <!-- Export -->
+    <string name="csv_exported">CSV exportado</string>
+
+    <!-- Navigation -->
+    <string name="navigate_back">Volver</string>
+
+    <!-- Day abbreviations -->
+    <string-array name="day_abbreviations">
+        <item>Lun</item>
+        <item>Mar</item>
+        <item>Mié</item>
+        <item>Jue</item>
+        <item>Vie</item>
+        <item>Sáb</item>
+        <item>Dom</item>
+    </string-array>
+
     <!-- General -->
     <string name="hidden_number">Número oculto</string>
     <string name="cancel">Cancelar</string>

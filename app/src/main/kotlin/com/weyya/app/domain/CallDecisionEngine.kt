@@ -20,14 +20,14 @@ class CallDecisionEngine @Inject constructor(
         windowMinutes: Int,
         isWithinSchedule: Boolean = true,
     ): CallDecision {
-        if (!isActive) return CallDecision.Allow
+        if (!isActive) return CallDecision.Allow()
 
-        if (!isWithinSchedule) return CallDecision.Allow
+        if (!isWithinSchedule) return CallDecision.Allow()
 
-        if (isWhitelisted) return CallDecision.Allow
+        if (isWhitelisted) return CallDecision.Allow()
 
         if (mode == BlockingMode.UNKNOWN_CALLERS && isContact) {
-            return CallDecision.Allow
+            return CallDecision.Allow()
         }
 
         if (phoneNumber == null) {
@@ -36,7 +36,7 @@ class CallDecisionEngine @Inject constructor(
 
         val count = attemptTracker.recordAndCount(phoneNumber, windowMinutes)
         if (count >= attemptThreshold) {
-            return CallDecision.Allow
+            return CallDecision.Allow("bypass")
         }
 
         return CallDecision.Reject("Attempt $count/$attemptThreshold")

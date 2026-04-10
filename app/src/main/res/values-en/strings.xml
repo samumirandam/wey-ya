@@ -88,6 +88,34 @@
     <string name="battery_optimization_button">Disable</string>
     <string name="battery_oem_help">Phone still killing the app?</string>
 
+    <!-- Toggle -->
+    <string name="toggle_activate">Activate protection</string>
+    <string name="toggle_deactivate">Deactivate protection</string>
+
+    <!-- Stats -->
+    <string name="total_stat">Total: %d</string>
+
+    <!-- Widget -->
+    <string name="widget_on">Active</string>
+    <string name="widget_off">Inactive</string>
+
+    <!-- Export -->
+    <string name="csv_exported">CSV exported</string>
+
+    <!-- Navigation -->
+    <string name="navigate_back">Go back</string>
+
+    <!-- Day abbreviations -->
+    <string-array name="day_abbreviations">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+
     <!-- General -->
     <string name="hidden_number">Hidden number</string>
     <string name="cancel">Cancel</string>

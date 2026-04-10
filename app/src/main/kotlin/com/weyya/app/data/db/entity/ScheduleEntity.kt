@@ -11,7 +11,7 @@ data class ScheduleEntity(
     val endTime: String, // "HH:mm"
     val enabled: Boolean = true,
 ) {
-    fun daysList(): List<Int> = daysOfWeek.split(",").map { it.trim().toInt() }
+    fun daysList(): List<Int> = daysOfWeek.split(",").mapNotNull { it.trim().toIntOrNull() }
 
     companion object {
         fun daysToString(days: Collection<Int>): String = days.sorted().joinToString(",")

@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weyya.app.data.db.dao.BlockedCallDao
 import com.weyya.app.data.db.dao.ScheduleDao
-import com.weyya.app.data.db.entity.BlockedCallEntity
 import com.weyya.app.data.prefs.UserPreferences
+import com.weyya.app.util.TimeUtils
 import com.weyya.app.domain.ScheduleChecker
 import com.weyya.app.domain.model.BlockingMode
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,14 +34,11 @@ class MainViewModel @Inject constructor(
     val blockingMode: StateFlow<BlockingMode> = prefs.blockingMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), BlockingMode.UNKNOWN_CALLERS)
 
-    val blockedToday: StateFlow<Int> = blockedCallDao.getBlockedCountSince(todayStartMillis())
+    val blockedToday: StateFlow<Int> = blockedCallDao.getBlockedCountSince(TimeUtils.todayStartMillis())
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
 
     val totalBlocked: StateFlow<Int> = blockedCallDao.getTotalBlockedCount()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
-
-    val lastBlocked: StateFlow<BlockedCallEntity?> = blockedCallDao.getLastBlocked()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val minuteTicker = flow {
         while (true) {
@@ -50,6 +46,9 @@ class MainViewModel @Inject constructor(
             delay(60_000)
         }
     }
+
+    val batteryDismissed: StateFlow<Boolean> = prefs.batteryDismissed
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val isWithinSchedule: StateFlow<Boolean> = combine(
         scheduleDao.getEnabled(),
@@ -71,18 +70,15 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun dismissBattery() {
+        viewModelScope.launch {
+            prefs.setBatteryDismissed(true)
+        }
+    }
+
     fun setBlockingMode(mode: BlockingMode) {
         viewModelScope.launch {
             prefs.setBlockingMode(mode)
         }
-    }
-
-    private fun todayStartMillis(): Long {
-        val cal = Calendar.getInstance()
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
-        return cal.timeInMillis
     }
 }

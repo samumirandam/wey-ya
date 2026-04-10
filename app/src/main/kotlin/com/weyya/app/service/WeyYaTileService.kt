@@ -31,24 +31,26 @@ class WeyYaTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
-        val prefs = entryPoint().userPreferences()
-        val current = runBlocking { prefs.isActive.first() }
-        runBlocking { prefs.setActive(!current) }
+        runBlocking(kotlinx.coroutines.Dispatchers.IO) {
+            val prefs = entryPoint().userPreferences()
+            prefs.setActive(!prefs.isActive.first())
+        }
         updateTile()
     }
 
     private fun updateTile() {
         val tile = qsTile ?: return
-        val prefs = entryPoint().userPreferences()
-        val isActive = runBlocking { prefs.isActive.first() }
-        val mode = runBlocking { prefs.blockingMode.first() }
+        val (isActive, mode) = runBlocking(kotlinx.coroutines.Dispatchers.IO) {
+            val prefs = entryPoint().userPreferences()
+            Pair(prefs.isActive.first(), prefs.blockingMode.first())
+        }
 
         tile.icon = Icon.createWithResource(this, R.drawable.ic_tile)
         tile.state = if (isActive) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
         tile.subtitle = when {
-            !isActive -> "OFF"
-            mode == BlockingMode.ALL_CALLERS -> "Bloquear todo"
-            else -> "Desconocidos"
+            !isActive -> getString(R.string.protection_off)
+            mode == BlockingMode.ALL_CALLERS -> getString(R.string.mode_all)
+            else -> getString(R.string.mode_unknown)
         }
         tile.updateTile()
     }

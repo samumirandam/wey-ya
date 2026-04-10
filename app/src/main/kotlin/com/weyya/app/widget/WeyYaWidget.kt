@@ -37,6 +37,8 @@ class WeyYaWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val state = WidgetDataHelper.readState(context)
+        val statusLabel = if (state.isActive) context.getString(R.string.widget_on)
+            else context.getString(R.string.widget_off)
 
         provideContent {
             GlanceTheme {
@@ -44,13 +46,14 @@ class WeyYaWidget : GlanceAppWidget() {
                     isActive = state.isActive,
                     modeName = state.modeName,
                     blockedToday = state.blockedToday,
+                    statusLabel = statusLabel,
                 )
             }
         }
     }
 
     @Composable
-    private fun WidgetContent(isActive: Boolean, modeName: String, blockedToday: Int) {
+    private fun WidgetContent(isActive: Boolean, modeName: String, blockedToday: Int, statusLabel: String) {
         val bgColor = if (isActive) Color(0xFFFF6B35) else Color(0xFF9E9E9E)
         val textColor = ColorProvider(Color.White)
 
@@ -72,7 +75,7 @@ class WeyYaWidget : GlanceAppWidget() {
             Spacer(GlanceModifier.width(10.dp))
             Column {
                 Text(
-                    text = if (isActive) "ON" else "OFF",
+                    text = statusLabel,
                     style = TextStyle(
                         color = textColor,
                         fontSize = 16.sp,

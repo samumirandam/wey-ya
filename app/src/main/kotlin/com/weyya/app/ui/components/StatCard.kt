@@ -42,7 +42,7 @@ fun StatCard(
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Total: $totalBlocked",
+                    text = stringResource(R.string.total_stat, totalBlocked),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
