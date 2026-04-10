@@ -375,13 +375,16 @@ private fun TimeSliders(
     onMinuteChange: (Int) -> Unit,
     invertedTrack: Boolean = false,
 ) {
+    val defaultColors = SliderDefaults.colors()
     val colors = if (invertedTrack) {
         SliderDefaults.colors(
             activeTrackColor = MaterialTheme.colorScheme.surfaceVariant,
             inactiveTrackColor = MaterialTheme.colorScheme.primary,
+            activeTickColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            inactiveTickColor = MaterialTheme.colorScheme.onPrimary,
         )
     } else {
-        SliderDefaults.colors()
+        defaultColors
     }
 
     Column {
