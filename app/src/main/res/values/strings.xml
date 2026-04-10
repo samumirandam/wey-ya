@@ -28,6 +28,9 @@
     <string name="schedules_section">Horarios</string>
     <string name="add_schedule">Agregar horario</string>
     <string name="no_schedules_hint">Sin horarios = bloquea 24/7 cuando está activo</string>
+    <string name="schedule_day">Día</string>
+    <string name="schedule_start">Hora inicio</string>
+    <string name="schedule_end">Hora fin</string>
     <string name="whitelist_section">Whitelist</string>
     <string name="add_to_whitelist">Agregar número</string>
     <string name="data_section">Datos</string>

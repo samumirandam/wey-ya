@@ -177,6 +177,21 @@ class CallDecisionEngineTest {
     }
 
     @Test
+    fun `outside schedule allows call even when active`() {
+        val result = engine.decide(
+            isActive = true,
+            mode = BlockingMode.UNKNOWN_CALLERS,
+            phoneNumber = "+5215512345678",
+            isContact = false,
+            isWhitelisted = false,
+            attemptThreshold = 3,
+            windowMinutes = 5,
+            isWithinSchedule = false,
+        )
+        assertThat(result).isEqualTo(CallDecision.Allow)
+    }
+
+    @Test
     fun `different phone numbers have independent counters`() {
         val phone1 = "+5215511111111"
         val phone2 = "+5215522222222"

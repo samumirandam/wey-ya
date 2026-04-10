@@ -2,14 +2,37 @@ package com.weyya.app.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.weyya.app.data.db.dao.BlockedCallDao
+import com.weyya.app.data.db.dao.ScheduleDao
 import com.weyya.app.data.db.entity.BlockedCallEntity
+import com.weyya.app.data.db.entity.ScheduleEntity
 
 @Database(
-    entities = [BlockedCallEntity::class],
-    version = 1,
+    entities = [BlockedCallEntity::class, ScheduleEntity::class],
+    version = 2,
     exportSchema = true,
 )
 abstract class WeyYaDatabase : RoomDatabase() {
     abstract fun blockedCallDao(): BlockedCallDao
+    abstract fun scheduleDao(): ScheduleDao
+
+    companion object {
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `schedules` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `dayOfWeek` INTEGER NOT NULL,
+                        `startTime` TEXT NOT NULL,
+                        `endTime` TEXT NOT NULL,
+                        `enabled` INTEGER NOT NULL DEFAULT 1
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+    }
 }

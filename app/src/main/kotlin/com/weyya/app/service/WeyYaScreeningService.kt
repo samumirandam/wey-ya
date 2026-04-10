@@ -4,9 +4,11 @@ import android.telecom.Call
 import android.telecom.CallScreeningService
 import com.weyya.app.data.contacts.ContactsResolver
 import com.weyya.app.data.db.dao.BlockedCallDao
+import com.weyya.app.data.db.dao.ScheduleDao
 import com.weyya.app.data.db.entity.BlockedCallEntity
 import com.weyya.app.data.prefs.UserPreferences
 import com.weyya.app.domain.CallDecisionEngine
+import com.weyya.app.domain.ScheduleChecker
 import com.weyya.app.domain.model.CallDecision
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -27,6 +29,8 @@ class WeyYaScreeningService : CallScreeningService() {
         fun userPreferences(): UserPreferences
         fun contactsResolver(): ContactsResolver
         fun blockedCallDao(): BlockedCallDao
+        fun scheduleDao(): ScheduleDao
+        fun scheduleChecker(): ScheduleChecker
     }
 
     override fun onScreenCall(callDetails: Call.Details) {
@@ -45,6 +49,9 @@ class WeyYaScreeningService : CallScreeningService() {
 
         val isContact = number?.let { entryPoint.contactsResolver().isContact(it) } ?: false
 
+        val schedules = runBlocking { entryPoint.scheduleDao().getEnabledSync() }
+        val isWithinSchedule = entryPoint.scheduleChecker().isBlockingActive(schedules)
+
         val decision = entryPoint.callDecisionEngine().decide(
             isActive = isActive,
             mode = mode,
@@ -53,6 +60,7 @@ class WeyYaScreeningService : CallScreeningService() {
             isWhitelisted = false,
             attemptThreshold = threshold,
             windowMinutes = window,
+            isWithinSchedule = isWithinSchedule,
         )
 
         val response = when (decision) {

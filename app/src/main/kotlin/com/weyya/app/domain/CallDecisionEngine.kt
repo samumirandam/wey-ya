@@ -18,8 +18,11 @@ class CallDecisionEngine @Inject constructor(
         isWhitelisted: Boolean,
         attemptThreshold: Int,
         windowMinutes: Int,
+        isWithinSchedule: Boolean = true,
     ): CallDecision {
         if (!isActive) return CallDecision.Allow
+
+        if (!isWithinSchedule) return CallDecision.Allow
 
         if (mode == BlockingMode.UNKNOWN_CALLERS && (isContact || isWhitelisted)) {
             return CallDecision.Allow
