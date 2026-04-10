@@ -35,10 +35,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch { prefs.setTimeWindowMinutes(value) }
     }
 
-    fun addSchedules(schedules: List<ScheduleEntity>) {
-        viewModelScope.launch {
-            schedules.forEach { scheduleDao.insert(it) }
-        }
+    fun addSchedule(schedule: ScheduleEntity) {
+        viewModelScope.launch { scheduleDao.insert(schedule) }
     }
 
     fun updateSchedule(schedule: ScheduleEntity) {

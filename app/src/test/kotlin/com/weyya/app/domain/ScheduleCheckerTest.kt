@@ -99,6 +99,27 @@ class ScheduleCheckerTest {
     }
 
     @Test
+    fun `multi-day schedule matches any included day`() {
+        val weekdays = ScheduleEntity(
+            id = 0,
+            daysOfWeek = "1,2,3,4,5",
+            startTime = "09:00",
+            endTime = "17:00",
+            enabled = true,
+        )
+        // Thursday 12:00 (day 4, included in 1,2,3,4,5)
+        assertThat(checker.isBlockingActive(
+            listOf(weekdays),
+            LocalDateTime.of(2026, 4, 9, 12, 0),
+        )).isTrue()
+        // Saturday 12:00 (day 6, NOT included)
+        assertThat(checker.isBlockingActive(
+            listOf(weekdays),
+            LocalDateTime.of(2026, 4, 11, 12, 0),
+        )).isFalse()
+    }
+
+    @Test
     fun `between multiple schedules returns false`() {
         val morning = scheduleFor(dayOfWeek = 4, start = "08:00", end = "12:00")
         val evening = scheduleFor(dayOfWeek = 4, start = "18:00", end = "22:00")
@@ -116,7 +137,7 @@ class ScheduleCheckerTest {
         enabled: Boolean = true,
     ) = ScheduleEntity(
         id = 0,
-        dayOfWeek = dayOfWeek,
+        daysOfWeek = dayOfWeek.toString(),
         startTime = start,
         endTime = end,
         enabled = enabled,

@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -160,8 +161,8 @@ fun SettingsScreen(
         ScheduleDialog(
             title = stringResource(R.string.add_schedule),
             onDismiss = { showAddDialog = false },
-            onConfirm = { entities ->
-                viewModel.addSchedules(entities)
+            onConfirm = { entity ->
+                viewModel.addSchedule(entity)
                 showAddDialog = false
             },
         )
@@ -170,17 +171,15 @@ fun SettingsScreen(
     editingSchedule?.let { schedule ->
         ScheduleDialog(
             title = stringResource(R.string.edit_schedule),
-            initialDays = setOf(schedule.dayOfWeek),
+            initialDays = schedule.daysList().toSet(),
             initialStartHour = schedule.startTime.substringBefore(":").toInt(),
             initialStartMinute = schedule.startTime.substringAfter(":").toInt(),
             initialEndHour = schedule.endTime.substringBefore(":").toInt(),
             initialEndMinute = schedule.endTime.substringAfter(":").toInt(),
-            singleEditMode = true,
             onDismiss = { editingSchedule = null },
-            onConfirm = { entities ->
-                val updated = entities.first()
+            onConfirm = { updated ->
                 viewModel.updateSchedule(schedule.copy(
-                    dayOfWeek = updated.dayOfWeek,
+                    daysOfWeek = updated.daysOfWeek,
                     startTime = updated.startTime,
                     endTime = updated.endTime,
                 ))
@@ -226,7 +225,9 @@ private fun ScheduleItem(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = dayNames.getOrElse(schedule.dayOfWeek - 1) { "?" },
+                    text = schedule.daysList()
+                        .map { dayNames.getOrElse(it - 1) { "?" } }
+                        .joinToString(", "),
                     style = MaterialTheme.typography.titleSmall,
                 )
                 Text(
@@ -258,9 +259,8 @@ private fun ScheduleDialog(
     initialStartMinute: Int = 0,
     initialEndHour: Int = 7,
     initialEndMinute: Int = 0,
-    singleEditMode: Boolean = false,
     onDismiss: () -> Unit,
-    onConfirm: (List<ScheduleEntity>) -> Unit,
+    onConfirm: (ScheduleEntity) -> Unit,
 ) {
     val selectedDays = remember { initialDays.toMutableStateList() }
     var startHour by remember { mutableIntStateOf(initialStartHour) }
@@ -277,8 +277,7 @@ private fun ScheduleDialog(
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 // Day selector — multi-select chips
                 Text(
-                    text = if (singleEditMode) stringResource(R.string.schedule_day)
-                    else stringResource(R.string.schedule_days),
+                    text = stringResource(R.string.schedule_days),
                     style = MaterialTheme.typography.labelLarge,
                 )
                 Row(
@@ -297,13 +296,8 @@ private fun ScheduleDialog(
                                     else MaterialTheme.colorScheme.surfaceVariant,
                                 )
                                 .clickable {
-                                    if (singleEditMode) {
-                                        selectedDays.clear()
-                                        selectedDays.add(day)
-                                    } else {
-                                        if (isSelected) selectedDays.remove(day)
-                                        else selectedDays.add(day)
-                                    }
+                                    if (isSelected) selectedDays.remove(day)
+                                    else selectedDays.add(day)
                                 },
                             contentAlignment = Alignment.Center,
                         ) {
@@ -317,22 +311,24 @@ private fun ScheduleDialog(
                     }
                 }
 
-                // Start time
+                // Start time — inverted track: color goes from thumb to right ("from here on")
                 Text(stringResource(R.string.schedule_start), style = MaterialTheme.typography.labelLarge)
                 TimeSliders(
                     hour = startHour,
                     minute = startMinute,
                     onHourChange = { startHour = it },
                     onMinuteChange = { startMinute = it },
+                    invertedTrack = true,
                 )
 
-                // End time
+                // End time — normal track: color goes from left to thumb ("until here")
                 Text(stringResource(R.string.schedule_end), style = MaterialTheme.typography.labelLarge)
                 TimeSliders(
                     hour = endHour,
                     minute = endMinute,
                     onHourChange = { endHour = it },
                     onMinuteChange = { endMinute = it },
+                    invertedTrack = false,
                 )
 
                 // Midnight-crossing hint
@@ -350,14 +346,13 @@ private fun ScheduleDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val entities = selectedDays.map { day ->
+                    onConfirm(
                         ScheduleEntity(
-                            dayOfWeek = day,
+                            daysOfWeek = ScheduleEntity.daysToString(selectedDays),
                             startTime = "%02d:%02d".format(startHour, startMinute),
                             endTime = "%02d:%02d".format(endHour, endMinute),
-                        )
-                    }
-                    onConfirm(entities)
+                        ),
+                    )
                 },
                 enabled = selectedDays.isNotEmpty(),
             ) {
@@ -378,7 +373,17 @@ private fun TimeSliders(
     minute: Int,
     onHourChange: (Int) -> Unit,
     onMinuteChange: (Int) -> Unit,
+    invertedTrack: Boolean = false,
 ) {
+    val colors = if (invertedTrack) {
+        SliderDefaults.colors(
+            activeTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+            inactiveTrackColor = MaterialTheme.colorScheme.primary,
+        )
+    } else {
+        SliderDefaults.colors()
+    }
+
     Column {
         Text("%02d:%02d".format(hour, minute), style = MaterialTheme.typography.headlineSmall)
         Slider(
@@ -386,12 +391,14 @@ private fun TimeSliders(
             onValueChange = { onHourChange(it.roundToInt()) },
             valueRange = 0f..23f,
             steps = 22,
+            colors = colors,
         )
         Slider(
             value = minute.toFloat(),
             onValueChange = { onMinuteChange(it.roundToInt()) },
             valueRange = 0f..55f,
             steps = 10,
+            colors = colors,
         )
     }
 }

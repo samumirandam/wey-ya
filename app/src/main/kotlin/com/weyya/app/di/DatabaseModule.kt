@@ -24,7 +24,7 @@ object DatabaseModule {
             WeyYaDatabase::class.java,
             "weyya.db",
         )
-            .addMigrations(WeyYaDatabase.MIGRATION_1_2)
+            .addMigrations(WeyYaDatabase.MIGRATION_1_2, WeyYaDatabase.MIGRATION_2_3)
             .build()
 
     @Provides

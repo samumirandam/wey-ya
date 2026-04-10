@@ -20,10 +20,10 @@ interface ScheduleDao {
     @Delete
     suspend fun delete(schedule: ScheduleEntity)
 
-    @Query("SELECT * FROM schedules ORDER BY dayOfWeek, startTime")
+    @Query("SELECT * FROM schedules ORDER BY startTime")
     fun getAll(): Flow<List<ScheduleEntity>>
 
-    @Query("SELECT * FROM schedules WHERE enabled = 1 ORDER BY dayOfWeek, startTime")
+    @Query("SELECT * FROM schedules WHERE enabled = 1 ORDER BY startTime")
     fun getEnabled(): Flow<List<ScheduleEntity>>
 
     @Query("SELECT * FROM schedules WHERE enabled = 1")

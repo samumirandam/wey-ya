@@ -11,7 +11,7 @@ import com.weyya.app.data.db.entity.ScheduleEntity
 
 @Database(
     entities = [BlockedCallEntity::class, ScheduleEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 abstract class WeyYaDatabase : RoomDatabase() {
@@ -32,6 +32,31 @@ abstract class WeyYaDatabase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `schedules_new` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `daysOfWeek` TEXT NOT NULL,
+                        `startTime` TEXT NOT NULL,
+                        `endTime` TEXT NOT NULL,
+                        `enabled` INTEGER NOT NULL DEFAULT 1
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    INSERT INTO `schedules_new` (`id`, `daysOfWeek`, `startTime`, `endTime`, `enabled`)
+                    SELECT `id`, CAST(`dayOfWeek` AS TEXT), `startTime`, `endTime`, `enabled`
+                    FROM `schedules`
+                    """.trimIndent()
+                )
+                db.execSQL("DROP TABLE `schedules`")
+                db.execSQL("ALTER TABLE `schedules_new` RENAME TO `schedules`")
             }
         }
     }

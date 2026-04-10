@@ -22,7 +22,7 @@ class ScheduleChecker @Inject constructor() {
         val currentTime = now.toLocalTime()
 
         return enabled.any { schedule ->
-            schedule.dayOfWeek == todayIso && isTimeInRange(currentTime, schedule.startTime, schedule.endTime)
+            todayIso in schedule.daysList() && isTimeInRange(currentTime, schedule.startTime, schedule.endTime)
         }
     }
 
@@ -31,7 +31,6 @@ class ScheduleChecker @Inject constructor() {
         val endTime = LocalTime.parse(end)
 
         return if (endTime > startTime) {
-            // Normal range: e.g. 09:00-17:00
             current in startTime..endTime
         } else {
             // Crosses midnight: e.g. 22:00-07:00
