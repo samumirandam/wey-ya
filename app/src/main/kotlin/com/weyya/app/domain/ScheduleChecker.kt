@@ -1,8 +1,10 @@
 package com.weyya.app.domain
 
+import android.util.Log
 import com.weyya.app.data.db.entity.ScheduleEntity
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.format.DateTimeParseException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,8 +26,15 @@ class ScheduleChecker @Inject constructor() {
         val yesterdayIso = now.minusDays(1).dayOfWeek.value
 
         return enabled.any { schedule ->
-            val startTime = LocalTime.parse(schedule.startTime)
-            val endTime = LocalTime.parse(schedule.endTime)
+            val startTime: LocalTime
+            val endTime: LocalTime
+            try {
+                startTime = LocalTime.parse(schedule.startTime)
+                endTime = LocalTime.parse(schedule.endTime)
+            } catch (_: DateTimeParseException) {
+                Log.w("ScheduleChecker", "Malformed schedule time: ${schedule.startTime}-${schedule.endTime}")
+                return@any false
+            }
             val crossesMidnight = endTime <= startTime
 
             if (crossesMidnight) {

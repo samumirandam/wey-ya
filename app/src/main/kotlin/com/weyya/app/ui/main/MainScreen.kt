@@ -65,6 +65,7 @@ import androidx.navigation.NavController
 import com.weyya.app.R
 import com.weyya.app.domain.model.BlockingMode
 import com.weyya.app.ui.components.BigToggle
+import com.weyya.app.navigation.Routes
 import com.weyya.app.ui.components.StatCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,8 +83,8 @@ fun MainScreen(
     val isWithinSchedule by viewModel.isWithinSchedule.collectAsStateWithLifecycle()
     val batteryDismissed by viewModel.batteryDismissed.collectAsStateWithLifecycle()
 
-    val roleManager = context.getSystemService(Context.ROLE_SERVICE) as RoleManager
-    val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    val roleManager = context.getSystemService(RoleManager::class.java)
+    val powerManager = context.getSystemService(PowerManager::class.java)
 
     // Permission state
     var contactsGranted by remember {
@@ -136,13 +137,13 @@ fun MainScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
                 actions = {
-                    IconButton(onClick = { navController.navigate("privacy") }) {
+                    IconButton(onClick = { navController.navigate(Routes.PRIVACY) }) {
                         Icon(Icons.Filled.Shield, contentDescription = stringResource(R.string.privacy_dashboard))
                     }
-                    IconButton(onClick = { navController.navigate("log") }) {
+                    IconButton(onClick = { navController.navigate(Routes.LOG) }) {
                         Icon(Icons.AutoMirrored.Filled.List, contentDescription = stringResource(R.string.call_log))
                     }
-                    IconButton(onClick = { navController.navigate("settings") }) {
+                    IconButton(onClick = { navController.navigate(Routes.SETTINGS) }) {
                         Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings))
                     }
                 },
@@ -174,6 +175,7 @@ fun MainScreen(
                 BigToggle(
                     isActive = isActive,
                     mode = mode,
+                    isWithinSchedule = isWithinSchedule,
                     onToggle = viewModel::toggle,
                 )
 

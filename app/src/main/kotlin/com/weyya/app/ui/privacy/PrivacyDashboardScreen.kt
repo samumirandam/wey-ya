@@ -30,9 +30,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -87,11 +98,31 @@ fun PrivacyDashboardScreen(
         ) {
             Spacer(Modifier.height(24.dp))
 
-            // Hero
+            // Animated shield hero
+            var targetScale by remember { mutableFloatStateOf(0f) }
+            val scaleIn by animateFloatAsState(
+                targetValue = targetScale,
+                animationSpec = tween(durationMillis = 600),
+                label = "shieldScale",
+            )
+            val pulse = rememberInfiniteTransition(label = "shieldPulse")
+            val pulseScale by pulse.animateFloat(
+                initialValue = 1f,
+                targetValue = 1.06f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(1200),
+                    repeatMode = RepeatMode.Reverse,
+                ),
+                label = "pulse",
+            )
+            LaunchedEffect(Unit) { targetScale = 1f }
+
             Icon(
                 imageVector = Icons.Filled.Shield,
                 contentDescription = null,
-                modifier = Modifier.size(64.dp),
+                modifier = Modifier
+                    .size(64.dp)
+                    .scale(scaleIn * pulseScale),
                 tint = MaterialTheme.colorScheme.primary,
             )
             Spacer(Modifier.height(12.dp))

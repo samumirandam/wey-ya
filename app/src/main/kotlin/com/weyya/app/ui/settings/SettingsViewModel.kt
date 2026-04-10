@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.weyya.app.data.prefs.DEFAULT_ATTEMPT_THRESHOLD
+import com.weyya.app.data.prefs.DEFAULT_TIME_WINDOW_MINUTES
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,10 +24,10 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
     val attemptThreshold: StateFlow<Int> = prefs.attemptThreshold
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 3)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DEFAULT_ATTEMPT_THRESHOLD)
 
     val timeWindowMinutes: StateFlow<Int> = prefs.timeWindowMinutes
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 5)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DEFAULT_TIME_WINDOW_MINUTES)
 
     val schedules: StateFlow<List<ScheduleEntity>> = scheduleDao.getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())

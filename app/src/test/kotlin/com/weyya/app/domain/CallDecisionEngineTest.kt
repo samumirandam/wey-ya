@@ -235,6 +235,34 @@ class CallDecisionEngineTest {
     }
 
     @Test
+    fun `empty string phone number is tracked normally`() {
+        val result = engine.decide(
+            isActive = true,
+            mode = BlockingMode.UNKNOWN_CALLERS,
+            phoneNumber = "",
+            isContact = false,
+            isWhitelisted = false,
+            attemptThreshold = 3,
+            windowMinutes = 5,
+        )
+        assertThat(result).isInstanceOf(CallDecision.Reject::class.java)
+    }
+
+    @Test
+    fun `whitelisted overrides even with null phone number`() {
+        val result = engine.decide(
+            isActive = true,
+            mode = BlockingMode.UNKNOWN_CALLERS,
+            phoneNumber = null,
+            isContact = false,
+            isWhitelisted = true,
+            attemptThreshold = 3,
+            windowMinutes = 5,
+        )
+        assertThat(result).isEqualTo(CallDecision.Allow())
+    }
+
+    @Test
     fun `different phone numbers have independent counters`() {
         val phone1 = "+5215511111111"
         val phone2 = "+5215522222222"

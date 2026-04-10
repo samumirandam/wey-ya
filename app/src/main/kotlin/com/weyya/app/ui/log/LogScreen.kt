@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.weyya.app.R
 import com.weyya.app.data.db.entity.BlockedCallEntity
+import com.weyya.app.util.TimeUtils
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -60,16 +61,13 @@ fun LogScreen(
 
     val filteredCalls = remember(allCalls, filter) {
         val cutoff = filter.daysBack?.let { days ->
-            val cal = Calendar.getInstance()
             if (days == 0) {
-                cal.set(Calendar.HOUR_OF_DAY, 0)
-                cal.set(Calendar.MINUTE, 0)
-                cal.set(Calendar.SECOND, 0)
-                cal.set(Calendar.MILLISECOND, 0)
+                TimeUtils.todayStartMillis()
             } else {
+                val cal = Calendar.getInstance()
                 cal.add(Calendar.DAY_OF_YEAR, -days)
+                cal.timeInMillis
             }
-            cal.timeInMillis
         }
         if (cutoff != null) allCalls.filter { it.timestamp >= cutoff } else allCalls
     }

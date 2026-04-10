@@ -9,5 +9,15 @@
 -keep class javax.inject.** { *; }
 -keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
 
-# CallScreeningService
+# CallScreeningService + TileService
 -keep class com.weyya.app.service.WeyYaScreeningService { *; }
+-keep class com.weyya.app.service.WeyYaTileService { *; }
+
+# ViewModels
+-keep class * extends androidx.lifecycle.ViewModel { *; }
+
+# Glance widgets
+-keep class com.weyya.app.widget.WeyYaWidgetReceiver { *; }
+-keep class com.weyya.app.widget.WeyYaWidget { *; }
+-keep class * extends androidx.glance.appwidget.GlanceAppWidget { *; }
+-keep class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver { *; }

@@ -35,6 +35,7 @@ import com.weyya.app.ui.theme.WeyYaRed
 fun BigToggle(
     isActive: Boolean,
     mode: BlockingMode,
+    isWithinSchedule: Boolean = true,
     onToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -49,6 +50,7 @@ fun BigToggle(
     val backgroundColor by animateColorAsState(
         targetValue = when {
             !isActive -> MaterialTheme.colorScheme.surfaceVariant
+            !isWithinSchedule -> WeyYaOrange
             mode == BlockingMode.ALL_CALLERS -> WeyYaRed
             else -> WeyYaGreen
         },

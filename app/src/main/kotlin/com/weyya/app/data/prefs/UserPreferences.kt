@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+const val DEFAULT_ATTEMPT_THRESHOLD = 3
+const val DEFAULT_TIME_WINDOW_MINUTES = 5
+
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "weyya_prefs")
 
 @Singleton
@@ -39,10 +42,10 @@ class UserPreferences @Inject constructor(
         .map { BlockingMode.fromString(it[Keys.BLOCKING_MODE] ?: "unknown") }
 
     val attemptThreshold: Flow<Int> = context.dataStore.data
-        .map { it[Keys.ATTEMPT_THRESHOLD] ?: 3 }
+        .map { it[Keys.ATTEMPT_THRESHOLD] ?: DEFAULT_ATTEMPT_THRESHOLD }
 
     val timeWindowMinutes: Flow<Int> = context.dataStore.data
-        .map { it[Keys.TIME_WINDOW_MINUTES] ?: 5 }
+        .map { it[Keys.TIME_WINDOW_MINUTES] ?: DEFAULT_TIME_WINDOW_MINUTES }
 
     val firstActivationDate: Flow<Long?> = context.dataStore.data
         .map { it[Keys.FIRST_ACTIVATION_DATE] }
@@ -64,11 +67,11 @@ class UserPreferences @Inject constructor(
     }
 
     suspend fun setAttemptThreshold(threshold: Int) {
-        context.dataStore.edit { it[Keys.ATTEMPT_THRESHOLD] = threshold }
+        context.dataStore.edit { it[Keys.ATTEMPT_THRESHOLD] = threshold.coerceIn(1, 10) }
     }
 
     suspend fun setTimeWindowMinutes(minutes: Int) {
-        context.dataStore.edit { it[Keys.TIME_WINDOW_MINUTES] = minutes }
+        context.dataStore.edit { it[Keys.TIME_WINDOW_MINUTES] = minutes.coerceIn(1, 30) }
     }
 
     suspend fun setBatteryDismissed(dismissed: Boolean) {

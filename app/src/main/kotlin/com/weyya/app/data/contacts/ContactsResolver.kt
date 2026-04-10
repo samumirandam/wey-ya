@@ -25,7 +25,7 @@ class ContactsResolver @Inject constructor(
                 null,
                 null,
             )?.use { it.moveToFirst() } ?: false
-        } catch (_: SecurityException) {
+        } catch (_: Exception) {
             false
         }
     }

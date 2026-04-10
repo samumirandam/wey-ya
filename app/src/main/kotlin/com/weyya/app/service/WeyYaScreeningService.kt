@@ -12,6 +12,7 @@ import com.weyya.app.domain.CallAttemptTracker
 import com.weyya.app.domain.CallDecisionEngine
 import com.weyya.app.domain.ScheduleChecker
 import com.weyya.app.domain.model.CallDecision
+import android.util.Log
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -76,15 +77,19 @@ class WeyYaScreeningService : CallScreeningService() {
         val response = when (decision) {
             is CallDecision.Allow -> {
                 if (decision.reason == "bypass" && number != null) {
-                    runBlocking(Dispatchers.IO) {
-                        entryPoint.blockedCallDao().insert(
-                            BlockedCallEntity(
-                                phoneNumber = number,
-                                timestamp = System.currentTimeMillis(),
-                                attemptCount = attemptCount,
-                                wasEventuallyAllowed = true,
-                            ),
-                        )
+                    try {
+                        runBlocking(Dispatchers.IO) {
+                            entryPoint.blockedCallDao().insert(
+                                BlockedCallEntity(
+                                    phoneNumber = number,
+                                    timestamp = System.currentTimeMillis(),
+                                    attemptCount = attemptCount,
+                                    wasEventuallyAllowed = true,
+                                ),
+                            )
+                        }
+                    } catch (e: Exception) {
+                        Log.e("WeyYaScreening", "Failed to record bypass", e)
                     }
                 }
                 CallResponse.Builder()
@@ -95,15 +100,19 @@ class WeyYaScreeningService : CallScreeningService() {
                     .build()
             }
             is CallDecision.Reject -> {
-                runBlocking(Dispatchers.IO) {
-                    entryPoint.blockedCallDao().insert(
-                        BlockedCallEntity(
-                            phoneNumber = number,
-                            timestamp = System.currentTimeMillis(),
-                            attemptCount = attemptCount,
-                            wasEventuallyAllowed = false,
-                        ),
-                    )
+                try {
+                    runBlocking(Dispatchers.IO) {
+                        entryPoint.blockedCallDao().insert(
+                            BlockedCallEntity(
+                                phoneNumber = number,
+                                timestamp = System.currentTimeMillis(),
+                                attemptCount = attemptCount,
+                                wasEventuallyAllowed = false,
+                            ),
+                        )
+                    }
+                } catch (e: Exception) {
+                    Log.e("WeyYaScreening", "Failed to record blocked call", e)
                 }
                 CallResponse.Builder()
                     .setDisallowCall(true)

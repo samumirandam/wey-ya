@@ -7,8 +7,8 @@
     <string name="protection_off">Disabled</string>
     <string name="mode_unknown">Unknown only</string>
     <string name="mode_all">Block all</string>
-    <string name="status_unknown">Protection active — Unknown callers only</string>
-    <string name="status_all">Total mode — Only urgent calls pass</string>
+    <string name="status_unknown">Blocking unknown callers</string>
+    <string name="status_all">Blocking all — Only urgent calls pass</string>
     <string name="status_off">Disabled</string>
     <string name="status_outside_schedule">Active — Outside schedule, calls pass through</string>
     <string name="blocked_today">Today: %d blocked</string>
@@ -121,4 +121,7 @@
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
     <string name="delete">Delete</string>
+    <string name="add_from_contacts">Add from contacts</string>
+    <string name="whitelist_invalid_number">Invalid number</string>
+    <string name="csv_export_error">Export error: %s</string>
 </resources>

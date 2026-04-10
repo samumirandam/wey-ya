@@ -10,24 +10,31 @@ import com.weyya.app.ui.main.MainScreen
 import com.weyya.app.ui.privacy.PrivacyDashboardScreen
 import com.weyya.app.ui.settings.SettingsScreen
 
+object Routes {
+    const val MAIN = "main"
+    const val SETTINGS = "settings"
+    const val PRIVACY = "privacy"
+    const val LOG = "log"
+}
+
 @Composable
 fun WeyYaNavGraph(
     navController: NavHostController = rememberNavController(),
 ) {
     NavHost(
         navController = navController,
-        startDestination = "main",
+        startDestination = Routes.MAIN,
     ) {
-        composable("main") {
+        composable(Routes.MAIN) {
             MainScreen(navController = navController)
         }
-        composable("settings") {
+        composable(Routes.SETTINGS) {
             SettingsScreen(navController = navController)
         }
-        composable("privacy") {
+        composable(Routes.PRIVACY) {
             PrivacyDashboardScreen(navController = navController)
         }
-        composable("log") {
+        composable(Routes.LOG) {
             LogScreen(navController = navController)
         }
     }

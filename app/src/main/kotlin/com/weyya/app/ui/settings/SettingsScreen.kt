@@ -1,5 +1,8 @@
 package com.weyya.app.ui.settings
 
+import android.provider.ContactsContract
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.WindowInsets
@@ -23,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -76,9 +80,47 @@ fun SettingsScreen(
 
     val dayNames = stringArrayResource(R.array.day_abbreviations).toList()
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+
     var showAddDialog by remember { mutableStateOf(false) }
     var editingSchedule by remember { mutableStateOf<ScheduleEntity?>(null) }
     var showAddWhitelistDialog by remember { mutableStateOf(false) }
+
+    val contactPickerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickContact(),
+    ) { uri ->
+        if (uri != null) {
+            val contactId = context.contentResolver.query(
+                uri, arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.DISPLAY_NAME),
+                null, null, null,
+            )?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val id = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
+                    val name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)) ?: ""
+                    Pair(id, name)
+                } else null
+            }
+            if (contactId != null) {
+                val phoneCursor = context.contentResolver.query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER),
+                    "${ContactsContract.CommonDataKinds.Phone.CONTACT_ID} = ?",
+                    arrayOf(contactId.first),
+                    null,
+                )
+                phoneCursor?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val phone = cursor.getString(
+                            cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER),
+                        )
+                        if (!phone.isNullOrBlank()) {
+                            viewModel.addToWhitelist(phone.trim(), contactId.second)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -181,8 +223,13 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     SectionHeader(stringResource(R.string.whitelist_section))
-                    IconButton(onClick = { showAddWhitelistDialog = true }) {
-                        Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_to_whitelist))
+                    Row {
+                        IconButton(onClick = { contactPickerLauncher.launch(null) }) {
+                            Icon(Icons.Filled.Contacts, contentDescription = stringResource(R.string.add_from_contacts))
+                        }
+                        IconButton(onClick = { showAddWhitelistDialog = true }) {
+                            Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_to_whitelist))
+                        }
                     }
                 }
             }
@@ -481,6 +528,11 @@ private fun AddWhitelistDialog(
     var number by remember { mutableStateOf("") }
     var label by remember { mutableStateOf("") }
 
+    val isValidPhone = remember(number) {
+        if (number.isBlank()) false
+        else number.trim().replace(Regex("[\\s\\-()]"), "").matches(Regex("^\\+?\\d{4,15}$"))
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.add_to_whitelist)) },
@@ -493,6 +545,10 @@ private fun AddWhitelistDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
+                    isError = number.isNotBlank() && !isValidPhone,
+                    supportingText = if (number.isNotBlank() && !isValidPhone) {
+                        { Text(stringResource(R.string.whitelist_invalid_number)) }
+                    } else null,
                 )
                 OutlinedTextField(
                     value = label,
@@ -506,7 +562,7 @@ private fun AddWhitelistDialog(
         confirmButton = {
             TextButton(
                 onClick = { onConfirm(number.trim(), label.trim()) },
-                enabled = number.isNotBlank(),
+                enabled = isValidPhone,
             ) {
                 Text(stringResource(R.string.confirm))
             }
