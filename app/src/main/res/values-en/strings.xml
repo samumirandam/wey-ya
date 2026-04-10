@@ -10,6 +10,7 @@
     <string name="status_unknown">Protection active — Unknown callers only</string>
     <string name="status_all">Total mode — Only urgent calls pass</string>
     <string name="status_off">Disabled</string>
+    <string name="status_outside_schedule">Active — Outside schedule, calls pass through</string>
     <string name="blocked_today">Today: %d blocked</string>
     <string name="blocked_this_week">This week: %d</string>
     <string name="last_blocked">Last blocked</string>
@@ -52,7 +53,7 @@
     <!-- Privacy Dashboard -->
     <string name="privacy_dashboard">Privacy</string>
     <string name="zero_bytes">0 bytes sent to the internet. Ever.</string>
-    <string name="total_blocked">Calls blocked: %d total (%d this month)</string>
+    <string name="total_blocked">Calls blocked: %1$d total (%2$d this month)</string>
     <string name="urgency_allowed">Urgent calls allowed: %d</string>
     <string name="days_protecting">Days protecting you: %d</string>
     <string name="permission_contacts">Contacts — to identify known callers</string>
@@ -64,6 +65,17 @@
 
     <!-- Quick Tile -->
     <string name="tile_label">Wey Ya!</string>
+
+    <!-- Whitelist -->
+    <string name="no_whitelist_hint">No numbers in whitelist</string>
+    <string name="whitelist_number_hint">Phone number</string>
+    <string name="whitelist_label_hint">Label (optional)</string>
+
+    <!-- Widget -->
+    <string name="widget_description">Blocking toggle and stats</string>
+
+    <!-- Log -->
+    <string name="no_log_entries">No blocked calls</string>
 
     <!-- General -->
     <string name="hidden_number">Hidden number</string>

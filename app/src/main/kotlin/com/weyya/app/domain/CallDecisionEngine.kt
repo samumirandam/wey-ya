@@ -24,7 +24,9 @@ class CallDecisionEngine @Inject constructor(
 
         if (!isWithinSchedule) return CallDecision.Allow
 
-        if (mode == BlockingMode.UNKNOWN_CALLERS && (isContact || isWhitelisted)) {
+        if (isWhitelisted) return CallDecision.Allow
+
+        if (mode == BlockingMode.UNKNOWN_CALLERS && isContact) {
             return CallDecision.Allow
         }
 

@@ -88,7 +88,7 @@ class CallDecisionEngineTest {
     }
 
     @Test
-    fun `all mode rejects whitelisted`() {
+    fun `all mode allows whitelisted`() {
         val result = engine.decide(
             isActive = true,
             mode = BlockingMode.ALL_CALLERS,
@@ -98,7 +98,7 @@ class CallDecisionEngineTest {
             attemptThreshold = 3,
             windowMinutes = 5,
         )
-        assertThat(result).isInstanceOf(CallDecision.Reject::class.java)
+        assertThat(result).isEqualTo(CallDecision.Allow)
     }
 
     @Test

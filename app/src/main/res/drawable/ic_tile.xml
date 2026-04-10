@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+>
+    <!-- Shield with phone blocked -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,1L3,5v6c0,5.55 3.84,10.74 9,12 5.16,-1.26 9,-6.45 9,-12V5L12,1zM12,21c-3.95,-1.05 -7,-5.33 -7,-10V6.3l7,-3.11 7,3.11V11c0,4.67 -3.05,8.95 -7,10z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M15.5,8.5l-1,-1L12,10l-2.5,-2.5 -1,1L11,11l-2.5,2.5 1,1L12,12l2.5,2.5 1,-1L13,11z" />
+</vector>

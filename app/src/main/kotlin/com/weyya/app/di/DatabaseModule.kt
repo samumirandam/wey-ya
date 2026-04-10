@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.weyya.app.data.db.WeyYaDatabase
 import com.weyya.app.data.db.dao.BlockedCallDao
 import com.weyya.app.data.db.dao.ScheduleDao
+import com.weyya.app.data.db.dao.WhitelistDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +25,7 @@ object DatabaseModule {
             WeyYaDatabase::class.java,
             "weyya.db",
         )
-            .addMigrations(WeyYaDatabase.MIGRATION_1_2, WeyYaDatabase.MIGRATION_2_3)
+            .addMigrations(WeyYaDatabase.MIGRATION_1_2, WeyYaDatabase.MIGRATION_2_3, WeyYaDatabase.MIGRATION_3_4)
             .build()
 
     @Provides
@@ -34,4 +35,8 @@ object DatabaseModule {
     @Provides
     fun provideScheduleDao(db: WeyYaDatabase): ScheduleDao =
         db.scheduleDao()
+
+    @Provides
+    fun provideWhitelistDao(db: WeyYaDatabase): WhitelistDao =
+        db.whitelistDao()
 }

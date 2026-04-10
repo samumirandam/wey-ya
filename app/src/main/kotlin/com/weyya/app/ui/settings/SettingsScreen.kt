@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,6 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.weyya.app.R
 import com.weyya.app.data.db.entity.ScheduleEntity
+import com.weyya.app.data.db.entity.WhitelistEntity
 import kotlin.math.roundToInt
 
 private val dayNames = listOf("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
@@ -65,9 +69,11 @@ fun SettingsScreen(
     val threshold by viewModel.attemptThreshold.collectAsStateWithLifecycle()
     val windowMinutes by viewModel.timeWindowMinutes.collectAsStateWithLifecycle()
     val schedules by viewModel.schedules.collectAsStateWithLifecycle()
+    val whitelist by viewModel.whitelist.collectAsStateWithLifecycle()
 
     var showAddDialog by remember { mutableStateOf(false) }
     var editingSchedule by remember { mutableStateOf<ScheduleEntity?>(null) }
+    var showAddWhitelistDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -153,6 +159,38 @@ fun SettingsScreen(
                 )
             }
 
+            // --- Whitelist section ---
+            item {
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    SectionHeader(stringResource(R.string.whitelist_section))
+                    IconButton(onClick = { showAddWhitelistDialog = true }) {
+                        Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_to_whitelist))
+                    }
+                }
+            }
+
+            if (whitelist.isEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.no_whitelist_hint),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
+            items(whitelist, key = { it.phoneNumber }) { entry ->
+                WhitelistItem(
+                    entry = entry,
+                    onDelete = { viewModel.removeFromWhitelist(entry.phoneNumber) },
+                )
+            }
+
             item { Spacer(Modifier.height(24.dp)) }
         }
     }
@@ -164,6 +202,16 @@ fun SettingsScreen(
             onConfirm = { entity ->
                 viewModel.addSchedule(entity)
                 showAddDialog = false
+            },
+        )
+    }
+
+    if (showAddWhitelistDialog) {
+        AddWhitelistDialog(
+            onDismiss = { showAddWhitelistDialog = false },
+            onConfirm = { number, label ->
+                viewModel.addToWhitelist(number, label)
+                showAddWhitelistDialog = false
             },
         )
     }
@@ -355,6 +403,93 @@ private fun ScheduleDialog(
                     )
                 },
                 enabled = selectedDays.isNotEmpty(),
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+    )
+}
+
+@Composable
+private fun WhitelistItem(
+    entry: WhitelistEntity,
+    onDelete: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = entry.phoneNumber,
+                    style = MaterialTheme.typography.titleSmall,
+                )
+                if (entry.label.isNotBlank()) {
+                    Text(
+                        text = entry.label,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            IconButton(onClick = onDelete) {
+                Icon(
+                    Icons.Filled.Delete,
+                    contentDescription = stringResource(R.string.delete),
+                    tint = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AddWhitelistDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String, String) -> Unit,
+) {
+    var number by remember { mutableStateOf("") }
+    var label by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.add_to_whitelist)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = number,
+                    onValueChange = { number = it },
+                    label = { Text(stringResource(R.string.whitelist_number_hint)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(
+                    value = label,
+                    onValueChange = { label = it },
+                    label = { Text(stringResource(R.string.whitelist_label_hint)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(number.trim(), label.trim()) },
+                enabled = number.isNotBlank(),
             ) {
                 Text(stringResource(R.string.confirm))
             }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -56,6 +57,7 @@ fun MainScreen(
     val blockedToday by viewModel.blockedToday.collectAsStateWithLifecycle()
     val totalBlocked by viewModel.totalBlocked.collectAsStateWithLifecycle()
     val hasRole by viewModel.hasScreeningRole.collectAsStateWithLifecycle()
+    val isWithinSchedule by viewModel.isWithinSchedule.collectAsStateWithLifecycle()
 
     val roleManager = context.getSystemService(Context.ROLE_SERVICE) as RoleManager
 
@@ -78,6 +80,9 @@ fun MainScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
                 actions = {
+                    IconButton(onClick = { navController.navigate("log") }) {
+                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = stringResource(R.string.call_log))
+                    }
                     IconButton(onClick = { navController.navigate("settings") }) {
                         Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings))
                     }
@@ -116,12 +121,16 @@ fun MainScreen(
                 Text(
                     text = when {
                         !isActive -> stringResource(R.string.status_off)
+                        !isWithinSchedule -> stringResource(R.string.status_outside_schedule)
                         mode == BlockingMode.ALL_CALLERS -> stringResource(R.string.status_all)
                         else -> stringResource(R.string.status_unknown)
                     },
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (isActive && !isWithinSchedule)
+                        MaterialTheme.colorScheme.tertiary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Spacer(Modifier.height(24.dp))

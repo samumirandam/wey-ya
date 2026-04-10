@@ -3,14 +3,19 @@ package com.weyya.app.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weyya.app.data.db.dao.BlockedCallDao
+import com.weyya.app.data.db.dao.ScheduleDao
 import com.weyya.app.data.db.entity.BlockedCallEntity
 import com.weyya.app.data.prefs.UserPreferences
+import com.weyya.app.domain.ScheduleChecker
 import com.weyya.app.domain.model.BlockingMode
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -20,6 +25,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val prefs: UserPreferences,
     private val blockedCallDao: BlockedCallDao,
+    private val scheduleDao: ScheduleDao,
+    private val scheduleChecker: ScheduleChecker,
 ) : ViewModel() {
 
     val isActive: StateFlow<Boolean> = prefs.isActive
@@ -36,6 +43,20 @@ class MainViewModel @Inject constructor(
 
     val lastBlocked: StateFlow<BlockedCallEntity?> = blockedCallDao.getLastBlocked()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private val minuteTicker = flow {
+        while (true) {
+            emit(Unit)
+            delay(60_000)
+        }
+    }
+
+    val isWithinSchedule: StateFlow<Boolean> = combine(
+        scheduleDao.getEnabled(),
+        minuteTicker,
+    ) { schedules, _ ->
+        scheduleChecker.isBlockingActive(schedules)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
 
     private val _hasScreeningRole = MutableStateFlow(false)
     val hasScreeningRole: StateFlow<Boolean> = _hasScreeningRole.asStateFlow()

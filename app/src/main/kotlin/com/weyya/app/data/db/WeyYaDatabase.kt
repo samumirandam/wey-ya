@@ -6,17 +6,20 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.weyya.app.data.db.dao.BlockedCallDao
 import com.weyya.app.data.db.dao.ScheduleDao
+import com.weyya.app.data.db.dao.WhitelistDao
 import com.weyya.app.data.db.entity.BlockedCallEntity
 import com.weyya.app.data.db.entity.ScheduleEntity
+import com.weyya.app.data.db.entity.WhitelistEntity
 
 @Database(
-    entities = [BlockedCallEntity::class, ScheduleEntity::class],
-    version = 3,
+    entities = [BlockedCallEntity::class, ScheduleEntity::class, WhitelistEntity::class],
+    version = 4,
     exportSchema = true,
 )
 abstract class WeyYaDatabase : RoomDatabase() {
     abstract fun blockedCallDao(): BlockedCallDao
     abstract fun scheduleDao(): ScheduleDao
+    abstract fun whitelistDao(): WhitelistDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -57,6 +60,20 @@ abstract class WeyYaDatabase : RoomDatabase() {
                 )
                 db.execSQL("DROP TABLE `schedules`")
                 db.execSQL("ALTER TABLE `schedules_new` RENAME TO `schedules`")
+            }
+        }
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `whitelist` (
+                        `phoneNumber` TEXT NOT NULL PRIMARY KEY,
+                        `label` TEXT NOT NULL DEFAULT '',
+                        `addedAt` INTEGER NOT NULL DEFAULT 0
+                    )
+                    """.trimIndent()
+                )
             }
         }
     }

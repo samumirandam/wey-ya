@@ -10,6 +10,7 @@
     <string name="status_unknown">Protección activa — Solo desconocidos</string>
     <string name="status_all">Modo total — Solo urgencias pasan</string>
     <string name="status_off">Desactivado</string>
+    <string name="status_outside_schedule">Activo — Fuera de horario, llamadas pasan</string>
     <string name="blocked_today">Hoy: %d bloqueadas</string>
     <string name="blocked_this_week">Esta semana: %d</string>
     <string name="last_blocked">Última bloqueada</string>
@@ -52,7 +53,7 @@
     <!-- Privacy Dashboard -->
     <string name="privacy_dashboard">Privacidad</string>
     <string name="zero_bytes">0 bytes enviados a internet. Nunca.</string>
-    <string name="total_blocked">Llamadas bloqueadas: %d total (%d este mes)</string>
+    <string name="total_blocked">Llamadas bloqueadas: %1$d total (%2$d este mes)</string>
     <string name="urgency_allowed">Llamadas de urgencia permitidas: %d</string>
     <string name="days_protecting">Días protegiéndote: %d</string>
     <string name="permission_contacts">Contactos — para identificar conocidos</string>
@@ -64,6 +65,17 @@
 
     <!-- Quick Tile -->
     <string name="tile_label">¡Wey Ya!</string>
+
+    <!-- Whitelist -->
+    <string name="no_whitelist_hint">Sin números en whitelist</string>
+    <string name="whitelist_number_hint">Número de teléfono</string>
+    <string name="whitelist_label_hint">Etiqueta (opcional)</string>
+
+    <!-- Widget -->
+    <string name="widget_description">Toggle y estadísticas de bloqueo</string>
+
+    <!-- Log -->
+    <string name="no_log_entries">Sin llamadas bloqueadas</string>
 
     <!-- General -->
     <string name="hidden_number">Número oculto</string>

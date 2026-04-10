@@ -1,9 +1,9 @@
 package com.weyya.app.service
 
-import android.content.Intent
+import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.weyya.app.MainActivity
+import com.weyya.app.R
 import com.weyya.app.data.prefs.UserPreferences
 import com.weyya.app.domain.model.BlockingMode
 import dagger.hilt.EntryPoint
@@ -43,6 +43,7 @@ class WeyYaTileService : TileService() {
         val isActive = runBlocking { prefs.isActive.first() }
         val mode = runBlocking { prefs.blockingMode.first() }
 
+        tile.icon = Icon.createWithResource(this, R.drawable.ic_tile)
         tile.state = if (isActive) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
         tile.subtitle = when {
             !isActive -> "OFF"
