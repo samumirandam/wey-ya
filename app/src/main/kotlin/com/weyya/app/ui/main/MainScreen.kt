@@ -128,8 +128,17 @@ fun MainScreen(
 
                 ModeSelector(
                     selectedMode = mode,
-                    enabled = isActive,
-                    onModeSelected = viewModel::setBlockingMode,
+                    isActive = isActive,
+                    onModeSelected = { selectedMode ->
+                        if (!isActive) {
+                            viewModel.setBlockingMode(selectedMode)
+                            viewModel.toggle()
+                        } else if (selectedMode == mode) {
+                            viewModel.toggle()
+                        } else {
+                            viewModel.setBlockingMode(selectedMode)
+                        }
+                    },
                 )
 
                 Spacer(Modifier.height(24.dp))
@@ -179,23 +188,21 @@ private fun RoleRequestCard(onRequest: () -> Unit) {
 @Composable
 private fun ModeSelector(
     selectedMode: BlockingMode,
-    enabled: Boolean,
+    isActive: Boolean,
     onModeSelected: (BlockingMode) -> Unit,
 ) {
     SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
         SegmentedButton(
-            selected = selectedMode == BlockingMode.UNKNOWN_CALLERS,
+            selected = isActive && selectedMode == BlockingMode.UNKNOWN_CALLERS,
             onClick = { onModeSelected(BlockingMode.UNKNOWN_CALLERS) },
             shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
-            enabled = enabled,
         ) {
             Text(stringResource(R.string.mode_unknown))
         }
         SegmentedButton(
-            selected = selectedMode == BlockingMode.ALL_CALLERS,
+            selected = isActive && selectedMode == BlockingMode.ALL_CALLERS,
             onClick = { onModeSelected(BlockingMode.ALL_CALLERS) },
             shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
-            enabled = enabled,
         ) {
             Text(stringResource(R.string.mode_all))
         }

@@ -1,7 +1,9 @@
 package com.weyya.app.ui.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -35,9 +39,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,7 +54,6 @@ import com.weyya.app.data.db.entity.ScheduleEntity
 import kotlin.math.roundToInt
 
 private val dayNames = listOf("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
-private val dayNamesEn = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +66,7 @@ fun SettingsScreen(
     val schedules by viewModel.schedules.collectAsStateWithLifecycle()
 
     var showAddDialog by remember { mutableStateOf(false) }
+    var editingSchedule by remember { mutableStateOf<ScheduleEntity?>(null) }
 
     Scaffold(
         topBar = {
@@ -141,6 +148,7 @@ fun SettingsScreen(
                     schedule = schedule,
                     onToggle = { viewModel.toggleSchedule(schedule) },
                     onDelete = { viewModel.deleteSchedule(schedule) },
+                    onEdit = { editingSchedule = schedule },
                 )
             }
 
@@ -149,11 +157,34 @@ fun SettingsScreen(
     }
 
     if (showAddDialog) {
-        AddScheduleDialog(
+        ScheduleDialog(
+            title = stringResource(R.string.add_schedule),
             onDismiss = { showAddDialog = false },
-            onConfirm = { schedule ->
-                viewModel.addSchedule(schedule)
+            onConfirm = { entities ->
+                viewModel.addSchedules(entities)
                 showAddDialog = false
+            },
+        )
+    }
+
+    editingSchedule?.let { schedule ->
+        ScheduleDialog(
+            title = stringResource(R.string.edit_schedule),
+            initialDays = setOf(schedule.dayOfWeek),
+            initialStartHour = schedule.startTime.substringBefore(":").toInt(),
+            initialStartMinute = schedule.startTime.substringAfter(":").toInt(),
+            initialEndHour = schedule.endTime.substringBefore(":").toInt(),
+            initialEndMinute = schedule.endTime.substringAfter(":").toInt(),
+            singleEditMode = true,
+            onDismiss = { editingSchedule = null },
+            onConfirm = { entities ->
+                val updated = entities.first()
+                viewModel.updateSchedule(schedule.copy(
+                    dayOfWeek = updated.dayOfWeek,
+                    startTime = updated.startTime,
+                    endTime = updated.endTime,
+                ))
+                editingSchedule = null
             },
         )
     }
@@ -174,9 +205,12 @@ private fun ScheduleItem(
     schedule: ScheduleEntity,
     onToggle: () -> Unit,
     onDelete: () -> Unit,
+    onEdit: () -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onEdit() },
         colors = CardDefaults.cardColors(
             containerColor = if (schedule.enabled)
                 MaterialTheme.colorScheme.secondaryContainer
@@ -217,40 +251,69 @@ private fun ScheduleItem(
 }
 
 @Composable
-private fun AddScheduleDialog(
+private fun ScheduleDialog(
+    title: String,
+    initialDays: Set<Int> = emptySet(),
+    initialStartHour: Int = 22,
+    initialStartMinute: Int = 0,
+    initialEndHour: Int = 7,
+    initialEndMinute: Int = 0,
+    singleEditMode: Boolean = false,
     onDismiss: () -> Unit,
-    onConfirm: (ScheduleEntity) -> Unit,
+    onConfirm: (List<ScheduleEntity>) -> Unit,
 ) {
-    var selectedDay by remember { mutableIntStateOf(1) }
-    var startHour by remember { mutableIntStateOf(22) }
-    var startMinute by remember { mutableIntStateOf(0) }
-    var endHour by remember { mutableIntStateOf(7) }
-    var endMinute by remember { mutableIntStateOf(0) }
+    val selectedDays = remember { initialDays.toMutableStateList() }
+    var startHour by remember { mutableIntStateOf(initialStartHour) }
+    var startMinute by remember { mutableIntStateOf(initialStartMinute) }
+    var endHour by remember { mutableIntStateOf(initialEndHour) }
+    var endMinute by remember { mutableIntStateOf(initialEndMinute) }
+
+    val crossesMidnight = endHour < startHour || (endHour == startHour && endMinute < startMinute)
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_schedule)) },
+        title = { Text(title) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                // Day selector
-                Text(stringResource(R.string.schedule_day), style = MaterialTheme.typography.labelLarge)
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                // Day selector — multi-select chips
+                Text(
+                    text = if (singleEditMode) stringResource(R.string.schedule_day)
+                    else stringResource(R.string.schedule_days),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
                     dayNames.forEachIndexed { index, name ->
                         val day = index + 1
-                        Text(
-                            text = name.take(2),
+                        val isSelected = day in selectedDays
+                        Box(
                             modifier = Modifier
-                                .clickable { selectedDay = day }
-                                .padding(8.dp),
-                            color = if (selectedDay == day)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = if (selectedDay == day)
-                                MaterialTheme.typography.labelLarge
-                            else
-                                MaterialTheme.typography.labelMedium,
-                        )
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (isSelected) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.surfaceVariant,
+                                )
+                                .clickable {
+                                    if (singleEditMode) {
+                                        selectedDays.clear()
+                                        selectedDays.add(day)
+                                    } else {
+                                        if (isSelected) selectedDays.remove(day)
+                                        else selectedDays.add(day)
+                                    }
+                                },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = name.take(2),
+                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        }
                     }
                 }
 
@@ -271,18 +334,33 @@ private fun AddScheduleDialog(
                     onHourChange = { endHour = it },
                     onMinuteChange = { endMinute = it },
                 )
+
+                // Midnight-crossing hint
+                if (crossesMidnight) {
+                    Text(
+                        text = stringResource(R.string.schedule_crosses_midnight),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         },
         confirmButton = {
-            TextButton(onClick = {
-                onConfirm(
-                    ScheduleEntity(
-                        dayOfWeek = selectedDay,
-                        startTime = "%02d:%02d".format(startHour, startMinute),
-                        endTime = "%02d:%02d".format(endHour, endMinute),
-                    ),
-                )
-            }) {
+            TextButton(
+                onClick = {
+                    val entities = selectedDays.map { day ->
+                        ScheduleEntity(
+                            dayOfWeek = day,
+                            startTime = "%02d:%02d".format(startHour, startMinute),
+                            endTime = "%02d:%02d".format(endHour, endMinute),
+                        )
+                    }
+                    onConfirm(entities)
+                },
+                enabled = selectedDays.isNotEmpty(),
+            ) {
                 Text(stringResource(R.string.confirm))
             }
         },

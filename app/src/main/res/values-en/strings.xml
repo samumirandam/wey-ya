@@ -29,8 +29,11 @@
     <string name="add_schedule">Add schedule</string>
     <string name="no_schedules_hint">No schedules = blocks 24/7 when active</string>
     <string name="schedule_day">Day</string>
+    <string name="schedule_days">Days</string>
     <string name="schedule_start">Start time</string>
     <string name="schedule_end">End time</string>
+    <string name="schedule_crosses_midnight">Schedule crosses midnight — ends on the next day</string>
+    <string name="edit_schedule">Edit schedule</string>
     <string name="whitelist_section">Whitelist</string>
     <string name="add_to_whitelist">Add number</string>
     <string name="data_section">Data</string>
