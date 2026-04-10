@@ -77,6 +77,17 @@
     <!-- Log -->
     <string name="no_log_entries">No blocked calls</string>
 
+    <!-- Permissions -->
+    <string name="permission_contacts_denied">Contact identification disabled — unsaved numbers will be treated as unknown.</string>
+    <string name="permission_open_settings">Open settings</string>
+    <string name="permission_retry">Retry</string>
+
+    <!-- Battery -->
+    <string name="battery_optimization_title">Battery optimization</string>
+    <string name="battery_optimization_description">Some phones may stop Wey Ya! from blocking calls in the background. Disable battery optimization for reliable protection.</string>
+    <string name="battery_optimization_button">Disable</string>
+    <string name="battery_oem_help">Phone still killing the app?</string>
+
     <!-- General -->
     <string name="hidden_number">Hidden number</string>
     <string name="cancel">Cancel</string>

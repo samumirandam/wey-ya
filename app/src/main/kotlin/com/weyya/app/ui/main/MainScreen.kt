@@ -1,9 +1,16 @@
 package com.weyya.app.ui.main
 
+import android.Manifest
 import android.app.role.RoleManager
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.PowerManager
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -22,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -31,13 +40,20 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.weyya.app.R
@@ -60,6 +76,25 @@ fun MainScreen(
     val isWithinSchedule by viewModel.isWithinSchedule.collectAsStateWithLifecycle()
 
     val roleManager = context.getSystemService(Context.ROLE_SERVICE) as RoleManager
+    val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+
+    // Permission state
+    var contactsGranted by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED,
+        )
+    }
+    var permissionRequested by remember { mutableStateOf(false) }
+    var batteryOptimized by remember {
+        mutableStateOf(!powerManager.isIgnoringBatteryOptimizations(context.packageName))
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions(),
+    ) { results ->
+        contactsGranted = results[Manifest.permission.READ_CONTACTS] == true
+        permissionRequested = true
+    }
 
     val roleLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -69,10 +104,24 @@ fun MainScreen(
         )
     }
 
-    LaunchedEffect(Unit) {
+    // Re-check on resume (user may return from Settings with permission granted)
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.setHasScreeningRole(
             roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING),
         )
+        contactsGranted = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.READ_CONTACTS,
+        ) == PackageManager.PERMISSION_GRANTED
+        batteryOptimized = !powerManager.isIgnoringBatteryOptimizations(context.packageName)
+    }
+
+    // Request permissions after role is granted
+    LaunchedEffect(hasRole) {
+        if (hasRole && !contactsGranted && !permissionRequested) {
+            permissionLauncher.launch(
+                arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_PHONE_STATE),
+            )
+        }
     }
 
     Scaffold(
@@ -80,6 +129,9 @@ fun MainScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
                 actions = {
+                    IconButton(onClick = { navController.navigate("privacy") }) {
+                        Icon(Icons.Filled.Shield, contentDescription = stringResource(R.string.privacy_dashboard))
+                    }
                     IconButton(onClick = { navController.navigate("log") }) {
                         Icon(Icons.AutoMirrored.Filled.List, contentDescription = stringResource(R.string.call_log))
                     }
@@ -156,6 +208,16 @@ fun MainScreen(
                     blockedToday = blockedToday,
                     totalBlocked = totalBlocked,
                 )
+
+                if (!contactsGranted && permissionRequested) {
+                    Spacer(Modifier.height(16.dp))
+                    PermissionDeniedCard(context)
+                }
+
+                if (batteryOptimized) {
+                    Spacer(Modifier.height(16.dp))
+                    BatteryOptimizationCard(context)
+                }
             }
         }
     }
@@ -188,6 +250,101 @@ private fun RoleRequestCard(onRequest: () -> Unit) {
             Spacer(Modifier.height(20.dp))
             Button(onClick = onRequest) {
                 Text(stringResource(R.string.role_needed_button))
+            }
+        }
+    }
+}
+
+@Composable
+private fun PermissionDeniedCard(context: Context) {
+    val activity = context as? androidx.activity.ComponentActivity
+    val canShowRationale = activity?.shouldShowRequestPermissionRationale(
+        Manifest.permission.READ_CONTACTS,
+    ) ?: false
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+        ),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.permission_contacts_denied),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Spacer(Modifier.height(12.dp))
+            if (canShowRationale) {
+                val permissionLauncher = rememberLauncherForActivityResult(
+                    ActivityResultContracts.RequestMultiplePermissions(),
+                ) { /* state updates on ON_RESUME */ }
+                OutlinedButton(onClick = {
+                    permissionLauncher.launch(
+                        arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_PHONE_STATE),
+                    )
+                }) {
+                    Text(stringResource(R.string.permission_retry))
+                }
+            } else {
+                OutlinedButton(onClick = {
+                    context.startActivity(
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts("package", context.packageName, null)
+                        },
+                    )
+                }) {
+                    Text(stringResource(R.string.permission_open_settings))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BatteryOptimizationCard(context: Context) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+        ),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.battery_optimization_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.battery_optimization_description),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                OutlinedButton(onClick = {
+                    context.startActivity(
+                        Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                            data = Uri.fromParts("package", context.packageName, null)
+                        },
+                    )
+                }) {
+                    Text(stringResource(R.string.battery_optimization_button))
+                }
+                Text(
+                    text = stringResource(R.string.battery_oem_help),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        textDecoration = TextDecoration.Underline,
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://dontkillmyapp.com")),
+                        )
+                    },
+                )
             }
         }
     }

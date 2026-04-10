@@ -77,6 +77,17 @@
     <!-- Log -->
     <string name="no_log_entries">Sin llamadas bloqueadas</string>
 
+    <!-- Permissions -->
+    <string name="permission_contacts_denied">Identificación de contactos desactivada — los números no guardados se tratarán como desconocidos.</string>
+    <string name="permission_open_settings">Abrir ajustes</string>
+    <string name="permission_retry">Reintentar</string>
+
+    <!-- Battery -->
+    <string name="battery_optimization_title">Optimización de batería</string>
+    <string name="battery_optimization_description">Algunos teléfonos pueden impedir que ¡Wey Ya! bloquee llamadas en segundo plano. Desactiva la optimización de batería para una protección confiable.</string>
+    <string name="battery_optimization_button">Desactivar</string>
+    <string name="battery_oem_help">¿Tu teléfono sigue cerrando la app?</string>
+
     <!-- General -->
     <string name="hidden_number">Número oculto</string>
     <string name="cancel">Cancelar</string>

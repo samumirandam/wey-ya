@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.weyya.app.ui.log.LogScreen
 import com.weyya.app.ui.main.MainScreen
+import com.weyya.app.ui.privacy.PrivacyDashboardScreen
 import com.weyya.app.ui.settings.SettingsScreen
 
 @Composable
@@ -22,6 +23,9 @@ fun WeyYaNavGraph(
         }
         composable("settings") {
             SettingsScreen(navController = navController)
+        }
+        composable("privacy") {
+            PrivacyDashboardScreen(navController = navController)
         }
         composable("log") {
             LogScreen(navController = navController)

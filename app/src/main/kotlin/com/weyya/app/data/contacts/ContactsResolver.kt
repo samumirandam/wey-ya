@@ -17,12 +17,16 @@ class ContactsResolver @Inject constructor(
             ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
             Uri.encode(phoneNumber),
         )
-        return context.contentResolver.query(
-            uri,
-            arrayOf(ContactsContract.PhoneLookup._ID),
-            null,
-            null,
-            null,
-        )?.use { it.moveToFirst() } ?: false
+        return try {
+            context.contentResolver.query(
+                uri,
+                arrayOf(ContactsContract.PhoneLookup._ID),
+                null,
+                null,
+                null,
+            )?.use { it.moveToFirst() } ?: false
+        } catch (_: SecurityException) {
+            false
+        }
     }
 }
