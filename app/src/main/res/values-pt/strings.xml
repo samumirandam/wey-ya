@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">¡Wey Ya!</string>
+
+    <!-- Main Screen -->
+    <string name="protection_active">Proteção ativa</string>
+    <string name="protection_off">Desativado</string>
+    <string name="mode_unknown">Somente desconhecidos</string>
+    <string name="mode_all">Bloquear todos</string>
+    <string name="status_unknown">Bloqueando desconhecidos</string>
+    <string name="status_all">Bloqueando todos — Só urgências passam</string>
+    <string name="status_off">Desativado</string>
+    <string name="status_outside_schedule">Ativo — Fora do horário, chamadas passam</string>
+    <string name="blocked_today">Hoje: %d bloqueadas</string>
+    <string name="blocked_this_week">Esta semana: %d</string>
+    <string name="last_blocked">Última bloqueada</string>
+    <string name="ago_format">há %s</string>
+
+    <!-- Role Request -->
+    <string name="role_needed_title">Ativar proteção</string>
+    <string name="role_needed_description">¡Wey Ya! precisa ser seu app de triagem de chamadas para bloquear números desconhecidos.</string>
+    <string name="role_needed_button">Ativar</string>
+
+    <!-- Settings -->
+    <string name="settings">Configurações</string>
+    <string name="persistence_section">Persistência</string>
+    <string name="threshold_label">Permitir após %d tentativas</string>
+    <string name="window_label">Em uma janela de %d minutos</string>
+    <string name="schedules_section">Horários</string>
+    <string name="add_schedule">Adicionar horário</string>
+    <string name="no_schedules_hint">Sem horários = bloqueia 24/7 quando ativo</string>
+    <string name="schedule_day">Dia</string>
+    <string name="schedule_days">Dias</string>
+    <string name="schedule_start">Hora início</string>
+    <string name="schedule_end">Hora fim</string>
+    <string name="schedule_crosses_midnight">O horário cruza meia-noite — termina no dia seguinte</string>
+    <string name="edit_schedule">Editar horário</string>
+    <string name="whitelist_section">Lista branca</string>
+    <string name="add_to_whitelist">Adicionar número</string>
+    <string name="data_section">Dados</string>
+    <string name="clear_history">Limpar histórico</string>
+    <string name="export_csv">Exportar log (CSV)</string>
+
+    <!-- Log -->
+    <string name="call_log">Histórico</string>
+    <string name="attempts_format">%d tentativas</string>
+    <string name="add_whitelist_action">Adicionar à lista branca</string>
+    <string name="filter_today">Hoje</string>
+    <string name="filter_week">7 dias</string>
+    <string name="filter_month">30 dias</string>
+    <string name="filter_all">Tudo</string>
+
+    <!-- Privacy Dashboard -->
+    <string name="privacy_dashboard">Privacidade</string>
+    <string name="zero_bytes">0 bytes enviados à internet. Nunca.</string>
+    <string name="total_blocked">Chamadas bloqueadas: %1$d total (%2$d este mês)</string>
+    <string name="urgency_allowed">Chamadas de urgência permitidas: %d</string>
+    <string name="days_protecting">Dias protegendo você: %d</string>
+    <string name="permission_contacts">Contatos — para identificar conhecidos</string>
+    <string name="permission_phone">Telefone — para filtrar chamadas</string>
+    <string name="permission_no_internet">Internet — NÃO solicitado</string>
+    <string name="permission_no_location">Localização — NÃO solicitado</string>
+    <string name="permission_no_storage">Armazenamento — NÃO solicitado</string>
+    <string name="permission_no_camera">Câmera/Microfone — NÃO solicitado</string>
+
+    <!-- Quick Tile -->
+    <string name="tile_label">¡Wey Ya!</string>
+
+    <!-- Whitelist -->
+    <string name="no_whitelist_hint">Sem números na lista branca</string>
+    <string name="whitelist_number_hint">Número de telefone</string>
+    <string name="whitelist_label_hint">Rótulo (opcional)</string>
+
+    <!-- Widget -->
+    <string name="widget_description">Toggle e estatísticas de bloqueio</string>
+
+    <!-- Log -->
+    <string name="no_log_entries">Sem chamadas bloqueadas</string>
+
+    <!-- Permissions -->
+    <string name="permission_contacts_denied">Identificação de contatos desativada — números não salvos serão tratados como desconhecidos.</string>
+    <string name="permission_open_settings">Abrir configurações</string>
+    <string name="permission_retry">Tentar novamente</string>
+
+    <!-- Battery -->
+    <string name="battery_optimization_title">Otimização de bateria</string>
+    <string name="battery_optimization_description">Alguns telefones podem impedir que ¡Wey Ya! bloqueie chamadas em segundo plano. Desative a otimização de bateria para proteção confiável.</string>
+    <string name="battery_optimization_button">Desativar</string>
+    <string name="battery_oem_help">Seu telefone continua fechando o app?</string>
+
+    <!-- Toggle -->
+    <string name="toggle_activate">Ativar proteção</string>
+    <string name="toggle_deactivate">Desativar proteção</string>
+
+    <!-- Stats -->
+    <string name="total_stat">Total: %d</string>
+
+    <!-- Widget -->
+    <string name="widget_on">Ativo</string>
+    <string name="widget_off">Inativo</string>
+
+    <!-- Export -->
+    <string name="csv_exported">CSV exportado</string>
+
+    <!-- Navigation -->
+    <string name="navigate_back">Voltar</string>
+
+    <!-- Day abbreviations -->
+    <string-array name="day_abbreviations">
+        <item>Seg</item>
+        <item>Ter</item>
+        <item>Qua</item>
+        <item>Qui</item>
+        <item>Sex</item>
+        <item>Sáb</item>
+        <item>Dom</item>
+    </string-array>
+
+    <!-- General -->
+    <string name="hidden_number">Número oculto</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="delete">Excluir</string>
+    <string name="add_from_contacts">Adicionar dos contatos</string>
+    <string name="whitelist_invalid_number">Número inválido</string>
+    <string name="csv_export_error">Erro ao exportar: %s</string>
+
+    <!-- About -->
+    <string name="about_section">Sobre</string>
+    <string name="about_report_bug">Reportar um problema</string>
+    <string name="about_report_bug_desc">Abra uma issue no GitHub</string>
+    <string name="about_rate">Avaliar na Play Store</string>
+    <string name="about_rate_desc">Sua opinião nos ajuda a melhorar</string>
+    <string name="about_github">Dar estrela no GitHub</string>
+    <string name="about_github_desc">Apoie o projeto open source</string>
+    <string name="about_version">Versão %s</string>
+</resources>

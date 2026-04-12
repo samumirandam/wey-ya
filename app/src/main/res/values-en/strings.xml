@@ -124,4 +124,14 @@
     <string name="add_from_contacts">Add from contacts</string>
     <string name="whitelist_invalid_number">Invalid number</string>
     <string name="csv_export_error">Export error: %s</string>
+
+    <!-- About -->
+    <string name="about_section">About</string>
+    <string name="about_report_bug">Report a problem</string>
+    <string name="about_report_bug_desc">Open an issue on GitHub</string>
+    <string name="about_rate">Rate on Play Store</string>
+    <string name="about_rate_desc">Your feedback helps us improve</string>
+    <string name="about_github">Star on GitHub</string>
+    <string name="about_github_desc">Support the open source project</string>
+    <string name="about_version">Version %s</string>
 </resources>

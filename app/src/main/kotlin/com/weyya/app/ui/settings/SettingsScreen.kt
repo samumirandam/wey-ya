@@ -1,5 +1,7 @@
 package com.weyya.app.ui.settings
 
+import android.content.Intent
+import android.net.Uri
 import android.provider.ContactsContract
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -248,6 +250,66 @@ fun SettingsScreen(
                 WhitelistItem(
                     entry = entry,
                     onDelete = { viewModel.removeFromWhitelist(entry.phoneNumber) },
+                )
+            }
+
+            // --- About section ---
+            item {
+                Spacer(Modifier.height(8.dp))
+                SectionHeader(stringResource(R.string.about_section))
+            }
+
+            item {
+                AboutLink(
+                    title = stringResource(R.string.about_report_bug),
+                    subtitle = stringResource(R.string.about_report_bug_desc),
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/samumirandam/wey-ya/issues"))
+                        context.startActivity(intent)
+                    },
+                )
+            }
+
+            item {
+                AboutLink(
+                    title = stringResource(R.string.about_rate),
+                    subtitle = stringResource(R.string.about_rate_desc),
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.weyya.app"))
+                        try {
+                            context.startActivity(intent)
+                        } catch (_: Exception) {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.weyya.app")),
+                            )
+                        }
+                    },
+                )
+            }
+
+            item {
+                AboutLink(
+                    title = stringResource(R.string.about_github),
+                    subtitle = stringResource(R.string.about_github_desc),
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/samumirandam/wey-ya"))
+                        context.startActivity(intent)
+                    },
+                )
+            }
+
+            item {
+                val packageInfo = remember {
+                    context.packageManager.getPackageInfo(context.packageName, 0)
+                }
+                Text(
+                    text = stringResource(R.string.about_version, packageInfo.versionName ?: ""),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    textAlign = TextAlign.Center,
                 )
             }
 
@@ -573,6 +635,33 @@ private fun AddWhitelistDialog(
             }
         },
     )
+}
+
+@Composable
+private fun AboutLink(
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+        ) {
+            Text(text = title, style = MaterialTheme.typography.titleSmall)
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }
 
 @Composable

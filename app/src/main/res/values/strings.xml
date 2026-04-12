@@ -124,4 +124,14 @@
     <string name="add_from_contacts">Agregar desde contactos</string>
     <string name="whitelist_invalid_number">Número no válido</string>
     <string name="csv_export_error">Error al exportar: %s</string>
+
+    <!-- About -->
+    <string name="about_section">Acerca de</string>
+    <string name="about_report_bug">Reportar un problema</string>
+    <string name="about_report_bug_desc">Abre un issue en GitHub</string>
+    <string name="about_rate">Calificar en Play Store</string>
+    <string name="about_rate_desc">Tu opinión nos ayuda a mejorar</string>
+    <string name="about_github">Dar estrella en GitHub</string>
+    <string name="about_github_desc">Apoya el proyecto open source</string>
+    <string name="about_version">Versión %s</string>
 </resources>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">¡Wey Ya!</string>
+
+    <!-- Main Screen -->
+    <string name="protection_active">Perlindungan aktif</string>
+    <string name="protection_off">Nonaktif</string>
+    <string name="mode_unknown">Hanya tidak dikenal</string>
+    <string name="mode_all">Blokir semua</string>
+    <string name="status_unknown">Memblokir penelepon tidak dikenal</string>
+    <string name="status_all">Memblokir semua — Hanya panggilan darurat yang masuk</string>
+    <string name="status_off">Nonaktif</string>
+    <string name="status_outside_schedule">Aktif — Di luar jadwal, panggilan masuk</string>
+    <string name="blocked_today">Hari ini: %d diblokir</string>
+    <string name="blocked_this_week">Minggu ini: %d</string>
+    <string name="last_blocked">Terakhir diblokir</string>
+    <string name="ago_format">%s yang lalu</string>
+
+    <!-- Role Request -->
+    <string name="role_needed_title">Aktifkan perlindungan</string>
+    <string name="role_needed_description">¡Wey Ya! perlu menjadi aplikasi penyaring panggilan Anda untuk memblokir nomor tidak dikenal.</string>
+    <string name="role_needed_button">Aktifkan</string>
+
+    <!-- Settings -->
+    <string name="settings">Pengaturan</string>
+    <string name="persistence_section">Persistensi</string>
+    <string name="threshold_label">Izinkan setelah %d percobaan</string>
+    <string name="window_label">Dalam jendela %d menit</string>
+    <string name="schedules_section">Jadwal</string>
+    <string name="add_schedule">Tambah jadwal</string>
+    <string name="no_schedules_hint">Tanpa jadwal = blokir 24/7 saat aktif</string>
+    <string name="schedule_day">Hari</string>
+    <string name="schedule_days">Hari</string>
+    <string name="schedule_start">Waktu mulai</string>
+    <string name="schedule_end">Waktu selesai</string>
+    <string name="schedule_crosses_midnight">Jadwal melewati tengah malam — berakhir keesokan hari</string>
+    <string name="edit_schedule">Edit jadwal</string>
+    <string name="whitelist_section">Daftar putih</string>
+    <string name="add_to_whitelist">Tambah nomor</string>
+    <string name="data_section">Data</string>
+    <string name="clear_history">Hapus riwayat</string>
+    <string name="export_csv">Ekspor log (CSV)</string>
+
+    <!-- Log -->
+    <string name="call_log">Riwayat</string>
+    <string name="attempts_format">%d percobaan</string>
+    <string name="add_whitelist_action">Tambah ke daftar putih</string>
+    <string name="filter_today">Hari ini</string>
+    <string name="filter_week">7 hari</string>
+    <string name="filter_month">30 hari</string>
+    <string name="filter_all">Semua</string>
+
+    <!-- Privacy Dashboard -->
+    <string name="privacy_dashboard">Privasi</string>
+    <string name="zero_bytes">0 byte dikirim ke internet. Tidak pernah.</string>
+    <string name="total_blocked">Panggilan diblokir: %1$d total (%2$d bulan ini)</string>
+    <string name="urgency_allowed">Panggilan darurat diizinkan: %d</string>
+    <string name="days_protecting">Hari melindungi Anda: %d</string>
+    <string name="permission_contacts">Kontak — untuk mengenali penelepon</string>
+    <string name="permission_phone">Telepon — untuk menyaring panggilan</string>
+    <string name="permission_no_internet">Internet — TIDAK diminta</string>
+    <string name="permission_no_location">Lokasi — TIDAK diminta</string>
+    <string name="permission_no_storage">Penyimpanan — TIDAK diminta</string>
+    <string name="permission_no_camera">Kamera/Mikrofon — TIDAK diminta</string>
+
+    <!-- Quick Tile -->
+    <string name="tile_label">¡Wey Ya!</string>
+
+    <!-- Whitelist -->
+    <string name="no_whitelist_hint">Tidak ada nomor di daftar putih</string>
+    <string name="whitelist_number_hint">Nomor telepon</string>
+    <string name="whitelist_label_hint">Label (opsional)</string>
+
+    <!-- Widget -->
+    <string name="widget_description">Toggle dan statistik pemblokiran</string>
+
+    <!-- Log -->
+    <string name="no_log_entries">Tidak ada panggilan yang diblokir</string>
+
+    <!-- Permissions -->
+    <string name="permission_contacts_denied">Identifikasi kontak nonaktif — nomor yang tidak tersimpan akan dianggap tidak dikenal.</string>
+    <string name="permission_open_settings">Buka pengaturan</string>
+    <string name="permission_retry">Coba lagi</string>
+
+    <!-- Battery -->
+    <string name="battery_optimization_title">Optimasi baterai</string>
+    <string name="battery_optimization_description">Beberapa ponsel mungkin menghentikan ¡Wey Ya! dari memblokir panggilan di latar belakang. Nonaktifkan optimasi baterai untuk perlindungan yang andal.</string>
+    <string name="battery_optimization_button">Nonaktifkan</string>
+    <string name="battery_oem_help">Ponsel Anda masih menutup aplikasi?</string>
+
+    <!-- Toggle -->
+    <string name="toggle_activate">Aktifkan perlindungan</string>
+    <string name="toggle_deactivate">Nonaktifkan perlindungan</string>
+
+    <!-- Stats -->
+    <string name="total_stat">Total: %d</string>
+
+    <!-- Widget -->
+    <string name="widget_on">Aktif</string>
+    <string name="widget_off">Nonaktif</string>
+
+    <!-- Export -->
+    <string name="csv_exported">CSV diekspor</string>
+
+    <!-- Navigation -->
+    <string name="navigate_back">Kembali</string>
+
+    <!-- Day abbreviations -->
+    <string-array name="day_abbreviations">
+        <item>Sen</item>
+        <item>Sel</item>
+        <item>Rab</item>
+        <item>Kam</item>
+        <item>Jum</item>
+        <item>Sab</item>
+        <item>Min</item>
+    </string-array>
+
+    <!-- General -->
+    <string name="hidden_number">Nomor tersembunyi</string>
+    <string name="cancel">Batal</string>
+    <string name="confirm">Konfirmasi</string>
+    <string name="delete">Hapus</string>
+    <string name="add_from_contacts">Tambah dari kontak</string>
+    <string name="whitelist_invalid_number">Nomor tidak valid</string>
+    <string name="csv_export_error">Gagal mengekspor: %s</string>
+
+    <!-- About -->
+    <string name="about_section">Tentang</string>
+    <string name="about_report_bug">Laporkan masalah</string>
+    <string name="about_report_bug_desc">Buka issue di GitHub</string>
+    <string name="about_rate">Nilai di Play Store</string>
+    <string name="about_rate_desc">Pendapat Anda membantu kami menjadi lebih baik</string>
+    <string name="about_github">Beri bintang di GitHub</string>
+    <string name="about_github_desc">Dukung proyek open source</string>
+    <string name="about_version">Versi %s</string>
+</resources>

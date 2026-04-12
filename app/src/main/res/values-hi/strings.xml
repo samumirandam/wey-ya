@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">¡Wey Ya!</string>
+
+    <!-- Main Screen -->
+    <string name="protection_active">सुरक्षा सक्रिय</string>
+    <string name="protection_off">निष्क्रिय</string>
+    <string name="mode_unknown">केवल अज्ञात</string>
+    <string name="mode_all">सभी को ब्लॉक करें</string>
+    <string name="status_unknown">अज्ञात कॉल ब्लॉक हो रही हैं</string>
+    <string name="status_all">सभी ब्लॉक — केवल आपातकालीन कॉल आएंगी</string>
+    <string name="status_off">निष्क्रिय</string>
+    <string name="status_outside_schedule">सक्रिय — शेड्यूल से बाहर, कॉल आ रही हैं</string>
+    <string name="blocked_today">आज: %d ब्लॉक</string>
+    <string name="blocked_this_week">इस सप्ताह: %d</string>
+    <string name="last_blocked">अंतिम ब्लॉक</string>
+    <string name="ago_format">%s पहले</string>
+
+    <!-- Role Request -->
+    <string name="role_needed_title">सुरक्षा सक्रिय करें</string>
+    <string name="role_needed_description">अज्ञात नंबरों को ब्लॉक करने के लिए ¡Wey Ya! को आपका कॉल स्क्रीनिंग ऐप होना चाहिए।</string>
+    <string name="role_needed_button">सक्रिय करें</string>
+
+    <!-- Settings -->
+    <string name="settings">सेटिंग्स</string>
+    <string name="persistence_section">दृढ़ता</string>
+    <string name="threshold_label">%d प्रयासों के बाद अनुमति दें</string>
+    <string name="window_label">%d मिनट की विंडो में</string>
+    <string name="schedules_section">शेड्यूल</string>
+    <string name="add_schedule">शेड्यूल जोड़ें</string>
+    <string name="no_schedules_hint">कोई शेड्यूल नहीं = सक्रिय होने पर 24/7 ब्लॉक</string>
+    <string name="schedule_day">दिन</string>
+    <string name="schedule_days">दिन</string>
+    <string name="schedule_start">शुरू का समय</string>
+    <string name="schedule_end">समाप्ति का समय</string>
+    <string name="schedule_crosses_midnight">शेड्यूल मध्यरात्रि को पार करता है — अगले दिन समाप्त होता है</string>
+    <string name="edit_schedule">शेड्यूल संपादित करें</string>
+    <string name="whitelist_section">व्हाइटलिस्ट</string>
+    <string name="add_to_whitelist">नंबर जोड़ें</string>
+    <string name="data_section">डेटा</string>
+    <string name="clear_history">इतिहास मिटाएं</string>
+    <string name="export_csv">लॉग निर्यात करें (CSV)</string>
+
+    <!-- Log -->
+    <string name="call_log">इतिहास</string>
+    <string name="attempts_format">%d प्रयास</string>
+    <string name="add_whitelist_action">व्हाइटलिस्ट में जोड़ें</string>
+    <string name="filter_today">आज</string>
+    <string name="filter_week">7 दिन</string>
+    <string name="filter_month">30 दिन</string>
+    <string name="filter_all">सभी</string>
+
+    <!-- Privacy Dashboard -->
+    <string name="privacy_dashboard">गोपनीयता</string>
+    <string name="zero_bytes">इंटरनेट पर 0 बाइट भेजे गए। कभी नहीं।</string>
+    <string name="total_blocked">ब्लॉक की गई कॉल: %1$d कुल (%2$d इस महीने)</string>
+    <string name="urgency_allowed">आपातकालीन कॉल अनुमत: %d</string>
+    <string name="days_protecting">आपकी सुरक्षा के दिन: %d</string>
+    <string name="permission_contacts">संपर्क — परिचितों की पहचान के लिए</string>
+    <string name="permission_phone">फ़ोन — कॉल फ़िल्टर करने के लिए</string>
+    <string name="permission_no_internet">इंटरनेट — अनुरोध नहीं किया</string>
+    <string name="permission_no_location">स्थान — अनुरोध नहीं किया</string>
+    <string name="permission_no_storage">स्टोरेज — अनुरोध नहीं किया</string>
+    <string name="permission_no_camera">कैमरा/माइक्रोफ़ोन — अनुरोध नहीं किया</string>
+
+    <!-- Quick Tile -->
+    <string name="tile_label">¡Wey Ya!</string>
+
+    <!-- Whitelist -->
+    <string name="no_whitelist_hint">व्हाइटलिस्ट में कोई नंबर नहीं</string>
+    <string name="whitelist_number_hint">फ़ोन नंबर</string>
+    <string name="whitelist_label_hint">लेबल (वैकल्पिक)</string>
+
+    <!-- Widget -->
+    <string name="widget_description">ब्लॉकिंग टॉगल और आंकड़े</string>
+
+    <!-- Log -->
+    <string name="no_log_entries">कोई ब्लॉक की गई कॉल नहीं</string>
+
+    <!-- Permissions -->
+    <string name="permission_contacts_denied">संपर्क पहचान निष्क्रिय — सहेजे नहीं गए नंबर अज्ञात माने जाएंगे।</string>
+    <string name="permission_open_settings">सेटिंग्स खोलें</string>
+    <string name="permission_retry">पुनः प्रयास करें</string>
+
+    <!-- Battery -->
+    <string name="battery_optimization_title">बैटरी अनुकूलन</string>
+    <string name="battery_optimization_description">कुछ फ़ोन ¡Wey Ya! को बैकग्राउंड में कॉल ब्लॉक करने से रोक सकते हैं। विश्वसनीय सुरक्षा के लिए बैटरी अनुकूलन बंद करें।</string>
+    <string name="battery_optimization_button">बंद करें</string>
+    <string name="battery_oem_help">क्या आपका फ़ोन अभी भी ऐप बंद कर रहा है?</string>
+
+    <!-- Toggle -->
+    <string name="toggle_activate">सुरक्षा सक्रिय करें</string>
+    <string name="toggle_deactivate">सुरक्षा निष्क्रिय करें</string>
+
+    <!-- Stats -->
+    <string name="total_stat">कुल: %d</string>
+
+    <!-- Widget -->
+    <string name="widget_on">सक्रिय</string>
+    <string name="widget_off">निष्क्रिय</string>
+
+    <!-- Export -->
+    <string name="csv_exported">CSV निर्यात हो गया</string>
+
+    <!-- Navigation -->
+    <string name="navigate_back">वापस जाएं</string>
+
+    <!-- Day abbreviations -->
+    <string-array name="day_abbreviations">
+        <item>सोम</item>
+        <item>मंग</item>
+        <item>बुध</item>
+        <item>गुरु</item>
+        <item>शुक्र</item>
+        <item>शनि</item>
+        <item>रवि</item>
+    </string-array>
+
+    <!-- General -->
+    <string name="hidden_number">छिपा नंबर</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="delete">हटाएं</string>
+    <string name="add_from_contacts">संपर्कों से जोड़ें</string>
+    <string name="whitelist_invalid_number">अमान्य नंबर</string>
+    <string name="csv_export_error">निर्यात में त्रुटि: %s</string>
+
+    <!-- About -->
+    <string name="about_section">ऐप के बारे में</string>
+    <string name="about_report_bug">समस्या की रिपोर्ट करें</string>
+    <string name="about_report_bug_desc">GitHub पर issue खोलें</string>
+    <string name="about_rate">Play Store पर रेटिंग दें</string>
+    <string name="about_rate_desc">आपकी राय हमें बेहतर बनने में मदद करती है</string>
+    <string name="about_github">GitHub पर स्टार दें</string>
+    <string name="about_github_desc">ओपन सोर्स प्रोजेक्ट का समर्थन करें</string>
+    <string name="about_version">संस्करण %s</string>
+</resources>
