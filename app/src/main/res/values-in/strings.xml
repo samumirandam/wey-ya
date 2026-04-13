@@ -5,7 +5,7 @@
     <!-- Main Screen -->
     <string name="protection_active">Perlindungan aktif</string>
     <string name="protection_off">Nonaktif</string>
-    <string name="mode_unknown">Hanya tidak dikenal</string>
+    <string name="mode_unknown">Tidak dikenal</string>
     <string name="mode_all">Blokir semua</string>
     <string name="status_unknown">Memblokir penelepon tidak dikenal</string>
     <string name="status_all">Memblokir semua — Hanya panggilan darurat yang masuk</string>

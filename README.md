@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/banner.png" alt="Wey Ya!" width="600">
+</p>
+
 # Wey Ya!
 
 Bloqueador de llamadas spam para Android. Sin internet. Sin analytics. Sin anuncios. Todo local.
@@ -7,6 +11,12 @@ Bloqueador de llamadas spam para Android. Sin internet. Sin analytics. Sin anunc
 **0 bytes enviados a internet. Nunca.**
 
 Wey Ya! es una app de codigo abierto que bloquea llamadas no deseadas sin conectarse a ningun servidor. No recopila datos, no muestra publicidad, no tiene permisos de red. Tu informacion nunca sale de tu telefono.
+
+<p align="center">
+  <img src="docs/home.png" alt="Pantalla principal" width="250">
+  &nbsp;&nbsp;
+  <img src="docs/setting.png" alt="Configuracion" width="250">
+</p>
 
 ## Features
 
@@ -18,7 +28,7 @@ Wey Ya! es una app de codigo abierto que bloquea llamadas no deseadas sin conect
 - **Quick Tile**: activa/desactiva desde el panel de ajustes rapidos
 - **Privacy Dashboard**: auditoria de permisos en tiempo real, estadisticas de bloqueo
 - **Historial**: log de llamadas bloqueadas con filtros y exportacion CSV
-- **i18n**: Espanol e Ingles
+- **i18n**: Espanol, Ingles, Portugues, Hindi, Indonesio
 
 ## Stack
 
@@ -49,6 +59,15 @@ El APK estara en `app/build/outputs/apk/debug/`.
 ```bash
 ./gradlew test
 ```
+
+## Contribuir
+
+- Reporta bugs o sugiere features en [GitHub Issues](https://github.com/samumirandam/wey-ya/issues)
+- PRs bienvenidos
+
+## Privacidad
+
+[Politica de privacidad](docs/privacy-policy.html) — TL;DR: no recopilamos nada, nunca.
 
 ## Licencia
 

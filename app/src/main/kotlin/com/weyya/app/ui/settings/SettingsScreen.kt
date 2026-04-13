@@ -311,6 +311,15 @@ fun SettingsScreen(
                         .padding(top = 8.dp),
                     textAlign = TextAlign.Center,
                 )
+                Text(
+                    text = "Para mi madre, con todo el amor del mundo mundial \u2764\uFE0F",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    textAlign = TextAlign.Center,
+                )
             }
 
             item { Spacer(Modifier.height(24.dp)) }

@@ -5,7 +5,7 @@
     <!-- Main Screen -->
     <string name="protection_active">Proteção ativa</string>
     <string name="protection_off">Desativado</string>
-    <string name="mode_unknown">Somente desconhecidos</string>
+    <string name="mode_unknown">Desconhecidos</string>
     <string name="mode_all">Bloquear todos</string>
     <string name="status_unknown">Bloqueando desconhecidos</string>
     <string name="status_all">Bloqueando todos — Só urgências passam</string>

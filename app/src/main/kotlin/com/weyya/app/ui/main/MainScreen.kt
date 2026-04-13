@@ -388,14 +388,14 @@ private fun ModeSelector(
             onClick = { onModeSelected(BlockingMode.UNKNOWN_CALLERS) },
             shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
         ) {
-            Text(stringResource(R.string.mode_unknown))
+            Text(stringResource(R.string.mode_unknown), maxLines = 1)
         }
         SegmentedButton(
             selected = isActive && selectedMode == BlockingMode.ALL_CALLERS,
             onClick = { onModeSelected(BlockingMode.ALL_CALLERS) },
             shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
         ) {
-            Text(stringResource(R.string.mode_all))
+            Text(stringResource(R.string.mode_all), maxLines = 1)
         }
     }
 }

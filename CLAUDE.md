@@ -39,9 +39,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **BigToggle colors**: Green = blocking unknown, Red = blocking all, Orange = active but outside schedule (calls pass), Gray = inactive
 - **Schedule midnight crossing**: Schedules like "22:00-06:00" span two days. `ScheduleChecker` handles this by checking both current day and previous day
 - **Minute slider**: `valueRange = 0f..55f, steps = 10` gives 12 positions at 5-minute increments (0, 5, 10...55). This is intentional UX, not a bug
-- **i18n**: Spanish (default in `values/strings.xml`) + English (`values-en/strings.xml`)
+- **i18n**: Spanish (default in `values/strings.xml`) + English (`values-en/`) + Portuguese (`values-pt/`) + Hindi (`values-hi/`) + Indonesian (`values-in/`). Indonesian uses code `in` (not `id`) per Android convention
 - **Widget**: Jetpack Glance (`WeyYaWidgetReceiver`), not RemoteViews
+- **About section links**: Uses `Intent(ACTION_VIEW)` to open URLs — works without INTERNET permission because it launches the system browser. Play Store link tries `market://` first, falls back to web URL
 - **Tests**: JUnit + Google Truth + Turbine. Tests live in `app/src/test/`. Domain layer has 90%+ coverage. No UI tests needed per project guidelines.
+
+## Screens & Navigation
+
+4 routes defined in `WeyYaNavGraph.kt` via `Routes` object: MAIN, SETTINGS, PRIVACY, LOG.
+
+- **Main** — BigToggle, blocking mode selector, stats summary
+- **Settings** — Persistence (threshold/window), schedules, whitelist, data management, About section (GitHub Issues/Play Store links via `Intent(ACTION_VIEW)`)
+- **Privacy Dashboard** — Zero-data transparency: total blocked, urgency bypasses, days protecting, permission audit with animated shield
+- **Log** — Blocked call history with time filters and whitelist actions
 
 ## DI Setup
 

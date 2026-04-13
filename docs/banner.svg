@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <rect width="1024" height="500" fill="#FF6B35"/>
+  <text x="512" y="220" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="96" fill="#FFFFFF">Wey Ya!</text>
+  <text x="512" y="310" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="36" fill="rgba(255,255,255,0.9)">Bloqueador de llamadas offline</text>
+</svg>
