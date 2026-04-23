@@ -2,6 +2,7 @@ package com.weyya.app.service
 
 import android.telecom.Call
 import android.telecom.CallScreeningService
+import android.telecom.PhoneAccount
 import com.weyya.app.data.contacts.ContactsResolver
 import com.weyya.app.data.db.dao.BlockedCallDao
 import com.weyya.app.data.db.dao.ScheduleDao
@@ -37,6 +38,16 @@ class WeyYaScreeningService : CallScreeningService() {
     }
 
     override fun onScreenCall(callDetails: Call.Details) {
+        // handle == null covers incoming calls with hidden/private number, which must
+        // still reach CallDecisionEngine — BlockingMode.ALL is expected to reject them.
+        val isIncoming = callDetails.callDirection == Call.Details.DIRECTION_INCOMING
+        val handle = callDetails.handle
+        val isTelOrHidden = handle == null || handle.scheme == PhoneAccount.SCHEME_TEL
+        if (!isIncoming || !isTelOrHidden) {
+            respondToCall(callDetails, CallResponse.Builder().build())
+            return
+        }
+
         val entryPoint = EntryPointAccessors.fromApplication(
             applicationContext,
             ScreeningEntryPoint::class.java,

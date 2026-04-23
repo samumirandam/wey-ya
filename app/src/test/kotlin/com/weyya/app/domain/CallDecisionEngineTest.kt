@@ -116,6 +116,20 @@ class CallDecisionEngineTest {
     }
 
     @Test
+    fun `all mode rejects null phone number (hidden)`() {
+        val result = engine.decide(
+            isActive = true,
+            mode = BlockingMode.ALL_CALLERS,
+            phoneNumber = null,
+            isContact = false,
+            isWhitelisted = false,
+            attemptThreshold = 3,
+            windowMinutes = 5,
+        )
+        assertThat(result).isEqualTo(CallDecision.Reject("Hidden number"))
+    }
+
+    @Test
     fun `persistence bypass allows after threshold attempts`() {
         val phone = "+5215512345678"
         val threshold = 3
