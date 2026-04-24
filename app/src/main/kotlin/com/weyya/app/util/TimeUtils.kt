@@ -4,8 +4,11 @@ import java.util.Calendar
 
 object TimeUtils {
 
-    fun todayStartMillis(): Long {
+    fun todayStartMillis(): Long = daysAgoStartMillis(0)
+
+    fun daysAgoStartMillis(days: Int): Long {
         val cal = Calendar.getInstance()
+        cal.add(Calendar.DAY_OF_YEAR, -days)
         cal.set(Calendar.HOUR_OF_DAY, 0)
         cal.set(Calendar.MINUTE, 0)
         cal.set(Calendar.SECOND, 0)

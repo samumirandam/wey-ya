@@ -81,11 +81,13 @@ class WeyYaWidget : GlanceAppWidget() {
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                     ),
+                    maxLines = 1,
                 )
                 if (isActive) {
                     Text(
                         text = modeName,
                         style = TextStyle(color = textColor, fontSize = 11.sp),
+                        maxLines = 1,
                     )
                 }
             }
@@ -97,6 +99,7 @@ class WeyYaWidget : GlanceAppWidget() {
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                 ),
+                maxLines = 1,
             )
         }
     }

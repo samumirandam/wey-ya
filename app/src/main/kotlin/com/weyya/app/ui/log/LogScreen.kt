@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,7 +46,6 @@ import com.weyya.app.R
 import com.weyya.app.data.db.entity.BlockedCallEntity
 import com.weyya.app.util.TimeUtils
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -60,15 +60,7 @@ fun LogScreen(
     val context = LocalContext.current
 
     val filteredCalls = remember(allCalls, filter) {
-        val cutoff = filter.daysBack?.let { days ->
-            if (days == 0) {
-                TimeUtils.todayStartMillis()
-            } else {
-                val cal = Calendar.getInstance()
-                cal.add(Calendar.DAY_OF_YEAR, -days)
-                cal.timeInMillis
-            }
-        }
+        val cutoff = filter.daysBack?.let { days -> TimeUtils.daysAgoStartMillis(days) }
         if (cutoff != null) allCalls.filter { it.timestamp >= cutoff } else allCalls
     }
 
@@ -192,11 +184,15 @@ private fun CallLogItem(
                 Text(
                     text = call.phoneNumber ?: stringResource(R.string.hidden_number),
                     style = MaterialTheme.typography.titleSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = "$dateStr — ${stringResource(R.string.attempts_format, call.attemptCount)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             if (call.phoneNumber != null) {

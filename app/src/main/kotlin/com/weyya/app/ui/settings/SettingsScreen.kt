@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -63,6 +64,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -479,10 +481,14 @@ private fun ScheduleItem(
                         .map { dayNames.getOrElse(it - 1) { "?" } }
                         .joinToString(", "),
                     style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = "${schedule.startTime} – ${schedule.endTime}",
                     style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 // Only render when dual-SIM and this schedule targets a specific slot
                 if (activeSims.size >= 2 && schedule.simSlot != null) {
@@ -491,6 +497,8 @@ private fun ScheduleItem(
                         text = label,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(top = 2.dp),
                     )
                 }
@@ -525,12 +533,12 @@ private fun ScheduleDialog(
     onDismiss: () -> Unit,
     onConfirm: (ScheduleEntity) -> Unit,
 ) {
-    val selectedDays = remember { initialDays.toMutableStateList() }
-    var startHour by remember { mutableIntStateOf(initialStartHour) }
-    var startMinute by remember { mutableIntStateOf(initialStartMinute) }
-    var endHour by remember { mutableIntStateOf(initialEndHour) }
-    var endMinute by remember { mutableIntStateOf(initialEndMinute) }
-    var selectedSimSlot by remember { mutableStateOf(initialSimSlot) }
+    val selectedDays = remember(initialDays) { initialDays.toMutableStateList() }
+    var startHour by remember(initialStartHour) { mutableIntStateOf(initialStartHour) }
+    var startMinute by remember(initialStartMinute) { mutableIntStateOf(initialStartMinute) }
+    var endHour by remember(initialEndHour) { mutableIntStateOf(initialEndHour) }
+    var endMinute by remember(initialEndMinute) { mutableIntStateOf(initialEndMinute) }
+    var selectedSimSlot by remember(initialSimSlot) { mutableStateOf(initialSimSlot) }
 
     val crossesMidnight = endHour < startHour || (endHour == startHour && endMinute < startMinute)
 
@@ -556,8 +564,8 @@ private fun ScheduleDialog(
                         val isSelected = day in selectedDays
                         Box(
                             modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
+                                .defaultMinSize(minWidth = 36.dp, minHeight = 36.dp)
+                                .clip(RoundedCornerShape(50))
                                 .background(
                                     if (isSelected) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.surfaceVariant,
@@ -565,7 +573,8 @@ private fun ScheduleDialog(
                                 .clickable {
                                     if (isSelected) selectedDays.remove(day)
                                     else selectedDays.add(day)
-                                },
+                                }
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
@@ -573,6 +582,7 @@ private fun ScheduleDialog(
                                 color = if (isSelected) MaterialTheme.colorScheme.onPrimary
                                 else MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.labelSmall,
+                                maxLines = 1,
                             )
                         }
                     }
@@ -822,6 +832,9 @@ private fun SimChip(
             color = if (selected) MaterialTheme.colorScheme.onPrimary
             else MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.labelMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
         )
     }
 }
