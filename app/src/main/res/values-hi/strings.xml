@@ -35,6 +35,12 @@
     <string name="schedule_end">समाप्ति का समय</string>
     <string name="schedule_crosses_midnight">शेड्यूल मध्यरात्रि को पार करता है — अगले दिन समाप्त होता है</string>
     <string name="edit_schedule">शेड्यूल संपादित करें</string>
+    <string name="schedule_applies_to">लागू होता है</string>
+    <string name="schedule_sim_both">दोनों</string>
+    <string name="schedule_sim_fallback">सिम %d</string>
+    <string name="dual_sim_permission_rationale">प्रति सिम शेड्यूल कॉन्फ़िगर करने के लिए फ़ोन अनुमति दें। कुछ भी डिवाइस से बाहर नहीं जाता।</string>
+    <string name="dual_sim_permission_cta">अनुमति दें</string>
+    <string name="dual_sim_permission_denied_hint">प्रति सिम कॉन्फ़िगर करने के लिए सिस्टम सेटिंग्स में फ़ोन अनुमति सक्षम करें।</string>
     <string name="whitelist_section">व्हाइटलिस्ट</string>
     <string name="add_to_whitelist">नंबर जोड़ें</string>
     <string name="data_section">डेटा</string>

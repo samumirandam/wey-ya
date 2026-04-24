@@ -46,4 +46,9 @@ class ScheduleEntityTest {
     fun `daysToString sorts and joins`() {
         assertThat(ScheduleEntity.daysToString(listOf(5, 1, 3))).isEqualTo("1,3,5")
     }
+
+    @Test
+    fun `simSlot defaults to null for legacy and mono-SIM rows`() {
+        assertThat(entity("1").simSlot).isNull()
+    }
 }

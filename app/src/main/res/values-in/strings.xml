@@ -35,6 +35,12 @@
     <string name="schedule_end">Waktu selesai</string>
     <string name="schedule_crosses_midnight">Jadwal melewati tengah malam — berakhir keesokan hari</string>
     <string name="edit_schedule">Edit jadwal</string>
+    <string name="schedule_applies_to">Berlaku untuk</string>
+    <string name="schedule_sim_both">Keduanya</string>
+    <string name="schedule_sim_fallback">SIM %d</string>
+    <string name="dual_sim_permission_rationale">Berikan izin telepon untuk mengonfigurasi jadwal per SIM. Tidak ada data yang keluar dari perangkat.</string>
+    <string name="dual_sim_permission_cta">Beri izin</string>
+    <string name="dual_sim_permission_denied_hint">Aktifkan izin telepon di pengaturan sistem untuk mengonfigurasi per SIM.</string>
     <string name="whitelist_section">Daftar putih</string>
     <string name="add_to_whitelist">Tambah nomor</string>
     <string name="data_section">Data</string>

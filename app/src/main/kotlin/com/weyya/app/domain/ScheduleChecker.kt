@@ -13,12 +13,27 @@ class ScheduleChecker @Inject constructor() {
 
     /**
      * Returns true if blocking should be active based on schedules.
-     * - No enabled schedules → true (block 24/7 when toggle is on)
-     * - Has enabled schedules → true only if current time falls within at least one
+     * - No enabled schedules at all → true (block 24/7 when toggle is on)
+     * - Enabled schedules exist but none apply to this SIM → false (this SIM is unrestricted)
+     * - At least one applicable schedule → true only if current time falls within at least one
+     *
+     * callSimSlot null means the resolver couldn't identify the SIM (mono-SIM, permission
+     * denied, hidden handle). In that case every enabled schedule applies — conservative
+     * fallback that preserves pre-dual-SIM behavior.
      */
-    fun isBlockingActive(schedules: List<ScheduleEntity>, now: LocalDateTime = LocalDateTime.now()): Boolean {
-        val enabled = schedules.filter { it.enabled }
-        if (enabled.isEmpty()) return true
+    fun isBlockingActive(
+        schedules: List<ScheduleEntity>,
+        callSimSlot: Int? = null,
+        now: LocalDateTime = LocalDateTime.now(),
+    ): Boolean {
+        val allEnabled = schedules.filter { it.enabled }
+        if (allEnabled.isEmpty()) return true
+
+        val enabled = allEnabled.filter { schedule ->
+            callSimSlot == null || schedule.simSlot == null || schedule.simSlot == callSimSlot
+        }
+        // Other SIMs have schedules but this call's SIM has none → unrestricted for this SIM
+        if (enabled.isEmpty()) return false
 
         val todayIso = now.dayOfWeek.value // 1=Monday … 7=Sunday
         val currentTime = now.toLocalTime()

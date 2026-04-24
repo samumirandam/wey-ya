@@ -9,6 +9,7 @@ import com.weyya.app.data.db.dao.ScheduleDao
 import com.weyya.app.data.db.dao.WhitelistDao
 import com.weyya.app.data.db.entity.BlockedCallEntity
 import com.weyya.app.data.prefs.UserPreferences
+import com.weyya.app.data.telephony.SimResolver
 import com.weyya.app.domain.CallAttemptTracker
 import com.weyya.app.domain.CallDecisionEngine
 import com.weyya.app.domain.ScheduleChecker
@@ -35,6 +36,7 @@ class WeyYaScreeningService : CallScreeningService() {
         fun scheduleDao(): ScheduleDao
         fun scheduleChecker(): ScheduleChecker
         fun whitelistDao(): WhitelistDao
+        fun simResolver(): SimResolver
     }
 
     override fun onScreenCall(callDetails: Call.Details) {
@@ -54,6 +56,7 @@ class WeyYaScreeningService : CallScreeningService() {
         )
 
         val number = callDetails.handle?.schemeSpecificPart
+        val callSimSlot = entryPoint.simResolver().resolveSlotFromCallDetails(callDetails)
 
         val (isActive, mode, threshold, window, isContact, isWhitelisted, isWithinSchedule) =
             runBlocking(Dispatchers.IO) {
@@ -67,6 +70,7 @@ class WeyYaScreeningService : CallScreeningService() {
                     isWhitelisted = number?.let { entryPoint.whitelistDao().isWhitelisted(it) } ?: false,
                     isWithinSchedule = entryPoint.scheduleChecker().isBlockingActive(
                         entryPoint.scheduleDao().getEnabledSync(),
+                        callSimSlot = callSimSlot,
                     ),
                 )
             }

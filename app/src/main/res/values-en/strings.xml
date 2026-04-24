@@ -35,6 +35,12 @@
     <string name="schedule_end">End time</string>
     <string name="schedule_crosses_midnight">Schedule crosses midnight — ends on the next day</string>
     <string name="edit_schedule">Edit schedule</string>
+    <string name="schedule_applies_to">Applies to</string>
+    <string name="schedule_sim_both">Both</string>
+    <string name="schedule_sim_fallback">SIM %d</string>
+    <string name="dual_sim_permission_rationale">Grant phone permission to configure schedules per SIM. Nothing ever leaves your device.</string>
+    <string name="dual_sim_permission_cta">Grant permission</string>
+    <string name="dual_sim_permission_denied_hint">Enable phone permission in system settings to configure per SIM.</string>
     <string name="whitelist_section">Whitelist</string>
     <string name="add_to_whitelist">Add number</string>
     <string name="data_section">Data</string>

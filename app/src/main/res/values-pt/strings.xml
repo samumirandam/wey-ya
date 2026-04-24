@@ -35,6 +35,12 @@
     <string name="schedule_end">Hora fim</string>
     <string name="schedule_crosses_midnight">O horário cruza meia-noite — termina no dia seguinte</string>
     <string name="edit_schedule">Editar horário</string>
+    <string name="schedule_applies_to">Aplica a</string>
+    <string name="schedule_sim_both">Ambos</string>
+    <string name="schedule_sim_fallback">SIM %d</string>
+    <string name="dual_sim_permission_rationale">Conceda permissão de telefone para configurar horários por SIM. Nada sai do dispositivo.</string>
+    <string name="dual_sim_permission_cta">Conceder permissão</string>
+    <string name="dual_sim_permission_denied_hint">Ative a permissão de telefone nas configurações do sistema para configurar por SIM.</string>
     <string name="whitelist_section">Lista branca</string>
     <string name="add_to_whitelist">Adicionar número</string>
     <string name="data_section">Dados</string>

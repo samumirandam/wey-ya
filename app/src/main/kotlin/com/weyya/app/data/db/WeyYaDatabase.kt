@@ -13,7 +13,7 @@ import com.weyya.app.data.db.entity.WhitelistEntity
 
 @Database(
     entities = [BlockedCallEntity::class, ScheduleEntity::class, WhitelistEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 abstract class WeyYaDatabase : RoomDatabase() {
@@ -74,6 +74,13 @@ abstract class WeyYaDatabase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // null = applies to every SIM (preserves pre-existing behavior)
+                db.execSQL("ALTER TABLE `schedules` ADD COLUMN `simSlot` INTEGER DEFAULT NULL")
             }
         }
     }

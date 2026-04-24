@@ -1,5 +1,6 @@
 package com.weyya.app.ui.settings
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.ContactsContract
@@ -62,11 +63,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.weyya.app.R
 import com.weyya.app.data.db.entity.ScheduleEntity
 import com.weyya.app.data.db.entity.WhitelistEntity
+import com.weyya.app.data.telephony.SimInfo
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,6 +83,7 @@ fun SettingsScreen(
     val windowMinutes by viewModel.timeWindowMinutes.collectAsStateWithLifecycle()
     val schedules by viewModel.schedules.collectAsStateWithLifecycle()
     val whitelist by viewModel.whitelist.collectAsStateWithLifecycle()
+    val activeSims by viewModel.activeSims.collectAsStateWithLifecycle()
 
     val dayNames = stringArrayResource(R.array.day_abbreviations).toList()
 
@@ -87,6 +92,29 @@ fun SettingsScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var editingSchedule by remember { mutableStateOf<ScheduleEntity?>(null) }
     var showAddWhitelistDialog by remember { mutableStateOf(false) }
+    var phonePermissionGranted by remember { mutableStateOf(viewModel.hasPhonePermission()) }
+
+    val phonePermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        phonePermissionGranted = granted
+        viewModel.refreshSims()
+    }
+
+    val isDualSim = viewModel.hasDualSim
+
+    // Re-check permission on resume so external grants/revocations (system settings) are picked up.
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        phonePermissionGranted = viewModel.hasPhonePermission()
+    }
+
+    // Refresh on every permission transition so a revocation clears the stale SIM list
+    // (refreshSims returns an empty list when the permission is missing).
+    LaunchedEffect(phonePermissionGranted) {
+        if (isDualSim) {
+            viewModel.refreshSims()
+        }
+    }
 
     val contactPickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickContact(),
@@ -196,6 +224,14 @@ fun SettingsScreen(
                 }
             }
 
+            if (isDualSim && !phonePermissionGranted) {
+                item {
+                    DualSimPermissionCard(
+                        onGrant = { phonePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE) },
+                    )
+                }
+            }
+
             if (schedules.isEmpty()) {
                 item {
                     Text(
@@ -210,6 +246,7 @@ fun SettingsScreen(
                 ScheduleItem(
                     schedule = schedule,
                     dayNames = dayNames,
+                    activeSims = activeSims,
                     onToggle = { viewModel.toggleSchedule(schedule) },
                     onDelete = { viewModel.deleteSchedule(schedule) },
                     onEdit = { editingSchedule = schedule },
@@ -330,6 +367,7 @@ fun SettingsScreen(
         ScheduleDialog(
             title = stringResource(R.string.add_schedule),
             dayNames = dayNames,
+            activeSims = activeSims,
             onDismiss = { showAddDialog = false },
             onConfirm = { entity ->
                 viewModel.addSchedule(entity)
@@ -352,21 +390,48 @@ fun SettingsScreen(
         ScheduleDialog(
             title = stringResource(R.string.edit_schedule),
             dayNames = dayNames,
+            activeSims = activeSims,
             initialDays = schedule.daysList().toSet(),
-            initialStartHour = schedule.startTime.substringBefore(":").toInt(),
-            initialStartMinute = schedule.startTime.substringAfter(":").toInt(),
-            initialEndHour = schedule.endTime.substringBefore(":").toInt(),
-            initialEndMinute = schedule.endTime.substringAfter(":").toInt(),
+            // Defensive parsing: fall back to 0 if a legacy/corrupt row stored a non-"HH:mm" value.
+            initialStartHour = schedule.startTime.substringBefore(":").toIntOrNull() ?: 0,
+            initialStartMinute = schedule.startTime.substringAfter(":").toIntOrNull() ?: 0,
+            initialEndHour = schedule.endTime.substringBefore(":").toIntOrNull() ?: 0,
+            initialEndMinute = schedule.endTime.substringAfter(":").toIntOrNull() ?: 0,
+            initialSimSlot = schedule.simSlot,
             onDismiss = { editingSchedule = null },
             onConfirm = { updated ->
                 viewModel.updateSchedule(schedule.copy(
                     daysOfWeek = updated.daysOfWeek,
                     startTime = updated.startTime,
                     endTime = updated.endTime,
+                    simSlot = updated.simSlot,
                 ))
                 editingSchedule = null
             },
         )
+    }
+}
+
+@Composable
+private fun DualSimPermissionCard(onGrant: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+        ),
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.dual_sim_permission_rationale),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            TextButton(onClick = onGrant) {
+                Text(stringResource(R.string.dual_sim_permission_cta))
+            }
+        }
     }
 }
 
@@ -384,6 +449,7 @@ private fun SectionHeader(text: String) {
 private fun ScheduleItem(
     schedule: ScheduleEntity,
     dayNames: List<String>,
+    activeSims: List<SimInfo>,
     onToggle: () -> Unit,
     onDelete: () -> Unit,
     onEdit: () -> Unit,
@@ -416,6 +482,16 @@ private fun ScheduleItem(
                     text = "${schedule.startTime} – ${schedule.endTime}",
                     style = MaterialTheme.typography.bodyMedium,
                 )
+                // Only render when dual-SIM and this schedule targets a specific slot
+                if (activeSims.size >= 2 && schedule.simSlot != null) {
+                    val label = simLabel(schedule.simSlot, activeSims)
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
+                }
             }
             Switch(
                 checked = schedule.enabled,
@@ -437,11 +513,13 @@ private fun ScheduleItem(
 private fun ScheduleDialog(
     title: String,
     dayNames: List<String>,
+    activeSims: List<SimInfo>,
     initialDays: Set<Int> = emptySet(),
     initialStartHour: Int = 22,
     initialStartMinute: Int = 0,
     initialEndHour: Int = 7,
     initialEndMinute: Int = 0,
+    initialSimSlot: Int? = null,
     onDismiss: () -> Unit,
     onConfirm: (ScheduleEntity) -> Unit,
 ) {
@@ -450,6 +528,7 @@ private fun ScheduleDialog(
     var startMinute by remember { mutableIntStateOf(initialStartMinute) }
     var endHour by remember { mutableIntStateOf(initialEndHour) }
     var endMinute by remember { mutableIntStateOf(initialEndMinute) }
+    var selectedSimSlot by remember { mutableStateOf(initialSimSlot) }
 
     val crossesMidnight = endHour < startHour || (endHour == startHour && endMinute < startMinute)
 
@@ -524,6 +603,47 @@ private fun ScheduleDialog(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
+
+                // SIM selector — show when dual-SIM is detected, OR when the schedule being
+                // edited already has a simSlot set (so the user can always clear the restriction
+                // with "Ambos" even if the permission is denied or the original SIM is gone).
+                val showSimSelector = activeSims.size >= 2 || selectedSimSlot != null
+                if (showSimSelector) {
+                    Text(
+                        text = stringResource(R.string.schedule_applies_to),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        SimChip(
+                            label = stringResource(R.string.schedule_sim_both),
+                            selected = selectedSimSlot == null,
+                            onClick = { selectedSimSlot = null },
+                        )
+                        activeSims.forEach { sim ->
+                            SimChip(
+                                label = sim.carrierName.ifBlank {
+                                    stringResource(R.string.schedule_sim_fallback, sim.slotIndex + 1)
+                                },
+                                selected = selectedSimSlot == sim.slotIndex,
+                                onClick = { selectedSimSlot = sim.slotIndex },
+                            )
+                        }
+                        // Stored slot no longer present in activeSims (SIM removed or permission
+                        // denied): render a read-only chip so the user can see and change it.
+                        val stored = selectedSimSlot
+                        if (stored != null && activeSims.none { it.slotIndex == stored }) {
+                            SimChip(
+                                label = stringResource(R.string.schedule_sim_fallback, stored + 1),
+                                selected = true,
+                                onClick = {},
+                                enabled = false,
+                            )
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
@@ -534,6 +654,7 @@ private fun ScheduleDialog(
                             daysOfWeek = ScheduleEntity.daysToString(selectedDays),
                             startTime = "%02d:%02d".format(startHour, startMinute),
                             endTime = "%02d:%02d".format(endHour, endMinute),
+                            simSlot = selectedSimSlot,
                         ),
                     )
                 },
@@ -671,6 +792,40 @@ private fun AboutLink(
             )
         }
     }
+}
+
+@Composable
+private fun SimChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+) {
+    Box(
+        modifier = Modifier
+            .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
+            .background(
+                if (selected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.surfaceVariant,
+            )
+            .clickable(enabled = enabled) { onClick() }
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            color = if (selected) MaterialTheme.colorScheme.onPrimary
+            else MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium,
+        )
+    }
+}
+
+@Composable
+private fun simLabel(slotIndex: Int, activeSims: List<SimInfo>): String {
+    val match = activeSims.firstOrNull { it.slotIndex == slotIndex }
+    return match?.carrierName?.takeIf { it.isNotBlank() }
+        ?: stringResource(R.string.schedule_sim_fallback, slotIndex + 1)
 }
 
 @Composable

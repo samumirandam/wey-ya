@@ -10,6 +10,8 @@ data class ScheduleEntity(
     val startTime: String, // "HH:mm"
     val endTime: String, // "HH:mm"
     val enabled: Boolean = true,
+    // null = applies to every SIM (mono-SIM and legacy rows); 0/1 = specific slot index
+    val simSlot: Int? = null,
 ) {
     fun daysList(): List<Int> = daysOfWeek.split(",").mapNotNull { it.trim().toIntOrNull() }.filter { it in 1..7 }
 
