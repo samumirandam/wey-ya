@@ -20,6 +20,8 @@
     <string name="role_needed_title">Activar protección</string>
     <string name="role_needed_description">¡Wey Ya! necesita ser tu app de filtrado de llamadas para poder bloquear números desconocidos.</string>
     <string name="role_needed_button">Activar</string>
+    <string name="role_denied_hint">Abre los Ajustes del sistema y elige ¡Wey Ya! como app de filtrado de llamadas.</string>
+    <string name="role_open_settings">Abrir Ajustes</string>
 
     <!-- Settings -->
     <string name="settings">Ajustes</string>

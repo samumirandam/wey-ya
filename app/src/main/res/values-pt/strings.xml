@@ -20,6 +20,8 @@
     <string name="role_needed_title">Ativar proteção</string>
     <string name="role_needed_description">¡Wey Ya! precisa ser seu app de triagem de chamadas para bloquear números desconhecidos.</string>
     <string name="role_needed_button">Ativar</string>
+    <string name="role_denied_hint">Abra as Configurações do sistema e escolha ¡Wey Ya! como seu app de triagem de chamadas.</string>
+    <string name="role_open_settings">Abrir Configurações</string>
 
     <!-- Settings -->
     <string name="settings">Configurações</string>

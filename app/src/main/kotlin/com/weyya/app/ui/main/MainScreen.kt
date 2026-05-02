@@ -2,6 +2,7 @@ package com.weyya.app.ui.main
 
 import android.Manifest
 import android.app.role.RoleManager
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -94,6 +95,7 @@ fun MainScreen(
         )
     }
     var permissionRequested by remember { mutableStateOf(false) }
+    var roleRequested by remember { mutableStateOf(false) }
     var batteryOptimized by remember {
         mutableStateOf(!powerManager.isIgnoringBatteryOptimizations(context.packageName))
     }
@@ -162,11 +164,36 @@ fun MainScreen(
         ) {
             if (!hasRole) {
                 RoleRequestCard(
+                    wasDenied = roleRequested,
                     onRequest = {
-                        if (roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)) {
-                            roleLauncher.launch(
-                                roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING),
-                            )
+                        val openSystemSettings = {
+                            try {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS),
+                                )
+                            } catch (_: ActivityNotFoundException) {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                        data = Uri.fromParts("package", context.packageName, null)
+                                    },
+                                )
+                            }
+                        }
+                        val canRequestRole = !roleRequested &&
+                            roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)
+                        if (canRequestRole) {
+                            try {
+                                roleLauncher.launch(
+                                    roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING),
+                                )
+                                roleRequested = true
+                            } catch (_: ActivityNotFoundException) {
+                                roleRequested = true
+                                openSystemSettings()
+                            }
+                        } else {
+                            roleRequested = true
+                            openSystemSettings()
                         }
                     },
                 )
@@ -241,7 +268,7 @@ fun MainScreen(
 }
 
 @Composable
-private fun RoleRequestCard(onRequest: () -> Unit) {
+private fun RoleRequestCard(wasDenied: Boolean, onRequest: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -264,9 +291,21 @@ private fun RoleRequestCard(onRequest: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
+            if (wasDenied) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.role_denied_hint),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                )
+            }
             Spacer(Modifier.height(20.dp))
             Button(onClick = onRequest) {
-                Text(stringResource(R.string.role_needed_button))
+                Text(
+                    stringResource(
+                        if (wasDenied) R.string.role_open_settings else R.string.role_needed_button,
+                    ),
+                )
             }
         }
     }
