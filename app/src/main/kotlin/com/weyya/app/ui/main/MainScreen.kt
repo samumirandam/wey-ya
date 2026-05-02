@@ -181,18 +181,16 @@ fun MainScreen(
                         }
                         val canRequestRole = !roleRequested &&
                             roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)
+                        roleRequested = true
                         if (canRequestRole) {
                             try {
                                 roleLauncher.launch(
                                     roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING),
                                 )
-                                roleRequested = true
                             } catch (_: ActivityNotFoundException) {
-                                roleRequested = true
                                 openSystemSettings()
                             }
                         } else {
-                            roleRequested = true
                             openSystemSettings()
                         }
                     },
