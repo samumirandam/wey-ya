@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-05-02
+
+### Fixed
+- "Activar" button on the role request card no longer silently no-ops when `RoleManager.isRoleAvailable()` returns `false` (some OEMs / non-telephony devices) or when the user denies the system role dialog. After the first attempt, the button switches to "Open Settings" and opens the system default-apps screen so users can pick ¡Wey Ya! manually, with a fallback to the app details screen if needed. Role and settings launches are now wrapped in `try/catch` for `ActivityNotFoundException`.
+
+### Added
+- New strings `role_denied_hint` and `role_open_settings` in all five locales (es, en, pt, hi, in).
+
 ## [1.2.0] - 2026-04-23
 
 ### Added

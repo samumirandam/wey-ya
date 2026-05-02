@@ -20,6 +20,8 @@
     <string name="role_needed_title">सुरक्षा सक्रिय करें</string>
     <string name="role_needed_description">अज्ञात नंबरों को ब्लॉक करने के लिए ¡Wey Ya! को आपका कॉल स्क्रीनिंग ऐप होना चाहिए।</string>
     <string name="role_needed_button">सक्रिय करें</string>
+    <string name="role_denied_hint">सिस्टम सेटिंग्स खोलें और अपने कॉल स्क्रीनिंग ऐप के रूप में ¡Wey Ya! चुनें।</string>
+    <string name="role_open_settings">सेटिंग्स खोलें</string>
 
     <!-- Settings -->
     <string name="settings">सेटिंग्स</string>
