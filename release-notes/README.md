@@ -1,33 +1,33 @@
 # Release notes
 
-Notas de versión orientadas al usuario final, listas para copiar/pegar en Google Play Console.
+End-user release notes, ready to copy/paste into Google Play Console.
 
-## Convención
+## Convention
 
-- Un archivo por versión: `<versionName>.md` (p. ej. `1.2.2.md`).
-- Una sección por idioma soportado: **es** (por defecto), **en**, **pt**, **hi**, **in**.
-- Cada nota va en un bloque de código para copiar de un clic.
-- **Límite de Play Store: 500 caracteres por idioma.** Mantén el mensaje corto.
-- Tono: usuario final, no técnico. Si el release es solo interno (sin cambios
-  visibles), dilo con honestidad — no inventes funcionalidades.
-- El detalle técnico vive en `CHANGELOG.md`; aquí solo lo que el usuario necesita saber.
+- One file per version: `<versionName>.md` (e.g. `1.2.2.md`).
+- One section per supported language: **en** (default), **es**, **pt**, **hi**, **in**.
+- Each note goes in a code block for one-click copying.
+- **Play Store limit: 500 characters per language.** Keep the message short.
+- Tone: end-user, non-technical. If the release is internal only (no visible
+  changes), say so honestly — don't invent features.
+- Technical detail lives in `CHANGELOG.md`; here, only what the user needs to know.
 
 ## Template
 
 ```markdown
 # Release notes — X.Y.Z (versionCode N)
 
-Resumen técnico (no va a Play): <una línea>. Ver `CHANGELOG.md`.
+Technical summary (not shipped to Play): <one line>. See `CHANGELOG.md`.
 
 ---
 
-## Español (es — por defecto)
+## English (en — default)
 
 ​```
-<máx. 500 caracteres>
+<max 500 characters>
 ​```
 
-## English (en)
+## Español (es)
 
 ​```
 <...>

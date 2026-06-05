@@ -1,145 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">¡Wey Ya!</string>
+    <string name="app_name">Wey Ya!</string>
 
     <!-- Main Screen -->
-    <string name="protection_active">Protección activa</string>
-    <string name="protection_off">Desactivado</string>
-    <string name="mode_unknown">Desconocidos</string>
-    <string name="mode_all">Bloquear todo</string>
-    <string name="status_unknown">Bloqueando desconocidos</string>
-    <string name="status_all">Bloqueando todo — Solo urgencias pasan</string>
-    <string name="status_off">Desactivado</string>
-    <string name="status_outside_schedule">Activo — Fuera de horario, llamadas pasan</string>
-    <string name="blocked_today">Hoy: %d bloqueadas</string>
-    <string name="blocked_this_week">Esta semana: %d</string>
-    <string name="last_blocked">Última bloqueada</string>
-    <string name="ago_format">hace %s</string>
+    <string name="protection_active">Protection active</string>
+    <string name="protection_off">Disabled</string>
+    <string name="mode_unknown">Unknown only</string>
+    <string name="mode_all">Block all</string>
+    <string name="status_unknown">Blocking unknown callers</string>
+    <string name="status_all">Blocking all — Only urgent calls pass</string>
+    <string name="status_off">Disabled</string>
+    <string name="status_outside_schedule">Active — Outside schedule, calls pass through</string>
+    <string name="blocked_today">Today: %d blocked</string>
+    <string name="blocked_this_week">This week: %d</string>
+    <string name="last_blocked">Last blocked</string>
+    <string name="ago_format">%s ago</string>
 
     <!-- Role Request -->
-    <string name="role_needed_title">Activar protección</string>
-    <string name="role_needed_description">¡Wey Ya! necesita ser tu app de filtrado de llamadas para poder bloquear números desconocidos.</string>
-    <string name="role_needed_button">Activar</string>
-    <string name="role_denied_hint">Abre los Ajustes del sistema y elige ¡Wey Ya! como app de filtrado de llamadas.</string>
-    <string name="role_open_settings">Abrir Ajustes</string>
+    <string name="role_needed_title">Enable protection</string>
+    <string name="role_needed_description">Wey Ya! needs to be your call screening app to block unknown numbers.</string>
+    <string name="role_needed_button">Enable</string>
+    <string name="role_denied_hint">Open system Settings and pick Wey Ya! as your call screening app.</string>
+    <string name="role_open_settings">Open Settings</string>
 
     <!-- Settings -->
-    <string name="settings">Ajustes</string>
-    <string name="persistence_section">Persistencia</string>
-    <string name="threshold_label">Dejar pasar después de %d intentos</string>
-    <string name="window_label">En una ventana de %d minutos</string>
-    <string name="schedules_section">Horarios</string>
-    <string name="add_schedule">Agregar horario</string>
-    <string name="no_schedules_hint">Sin horarios = bloquea 24/7 cuando está activo</string>
-    <string name="schedule_day">Día</string>
-    <string name="schedule_days">Días</string>
-    <string name="schedule_start">Hora inicio</string>
-    <string name="schedule_end">Hora fin</string>
-    <string name="schedule_crosses_midnight">El horario cruza medianoche — termina al día siguiente</string>
-    <string name="edit_schedule">Editar horario</string>
-    <string name="schedule_applies_to">Aplica a</string>
-    <string name="schedule_sim_both">Ambos</string>
+    <string name="settings">Settings</string>
+    <string name="persistence_section">Persistence</string>
+    <string name="threshold_label">Allow after %d attempts</string>
+    <string name="window_label">Within %d minutes</string>
+    <string name="schedules_section">Schedules</string>
+    <string name="add_schedule">Add schedule</string>
+    <string name="no_schedules_hint">No schedules = blocks 24/7 when active</string>
+    <string name="schedule_day">Day</string>
+    <string name="schedule_days">Days</string>
+    <string name="schedule_start">Start time</string>
+    <string name="schedule_end">End time</string>
+    <string name="schedule_crosses_midnight">Schedule crosses midnight — ends on the next day</string>
+    <string name="edit_schedule">Edit schedule</string>
+    <string name="schedule_applies_to">Applies to</string>
+    <string name="schedule_sim_both">Both</string>
     <string name="schedule_sim_fallback">SIM %d</string>
-    <string name="dual_sim_permission_rationale">Otorga permiso de teléfono para configurar horarios por SIM. Nunca sale del dispositivo.</string>
-    <string name="dual_sim_permission_cta">Otorgar permiso</string>
-    <string name="dual_sim_permission_denied_hint">Activa el permiso de teléfono en ajustes del sistema para configurar por SIM.</string>
+    <string name="dual_sim_permission_rationale">Grant phone permission to configure schedules per SIM. Nothing ever leaves your device.</string>
+    <string name="dual_sim_permission_cta">Grant permission</string>
+    <string name="dual_sim_permission_denied_hint">Enable phone permission in system settings to configure per SIM.</string>
     <string name="whitelist_section">Whitelist</string>
-    <string name="add_to_whitelist">Agregar número</string>
-    <string name="data_section">Datos</string>
-    <string name="clear_history">Limpiar historial</string>
-    <string name="export_csv">Exportar log (CSV)</string>
+    <string name="add_to_whitelist">Add number</string>
+    <string name="data_section">Data</string>
+    <string name="clear_history">Clear history</string>
+    <string name="export_csv">Export log (CSV)</string>
 
     <!-- Log -->
-    <string name="call_log">Historial</string>
-    <string name="attempts_format">%d intentos</string>
-    <string name="add_whitelist_action">Agregar a whitelist</string>
-    <string name="filter_today">Hoy</string>
-    <string name="filter_week">7 días</string>
-    <string name="filter_month">30 días</string>
-    <string name="filter_all">Todo</string>
+    <string name="call_log">History</string>
+    <string name="attempts_format">%d attempts</string>
+    <string name="add_whitelist_action">Add to whitelist</string>
+    <string name="filter_today">Today</string>
+    <string name="filter_week">7 days</string>
+    <string name="filter_month">30 days</string>
+    <string name="filter_all">All</string>
 
     <!-- Privacy Dashboard -->
-    <string name="privacy_dashboard">Privacidad</string>
-    <string name="zero_bytes">0 bytes enviados a internet. Nunca.</string>
-    <string name="total_blocked">Llamadas bloqueadas: %1$d total (%2$d este mes)</string>
-    <string name="urgency_allowed">Llamadas de urgencia permitidas: %d</string>
-    <string name="days_protecting">Días protegiéndote: %d</string>
-    <string name="permission_contacts">Contactos — para identificar conocidos</string>
-    <string name="permission_phone">Teléfono — para filtrar llamadas</string>
-    <string name="permission_no_internet">Internet — NO solicitado</string>
-    <string name="permission_no_location">Ubicación — NO solicitado</string>
-    <string name="permission_no_storage">Almacenamiento — NO solicitado</string>
-    <string name="permission_no_camera">Cámara/Micrófono — NO solicitado</string>
+    <string name="privacy_dashboard">Privacy</string>
+    <string name="zero_bytes">0 bytes sent to the internet. Ever.</string>
+    <string name="total_blocked">Calls blocked: %1$d total (%2$d this month)</string>
+    <string name="urgency_allowed">Urgent calls allowed: %d</string>
+    <string name="days_protecting">Days protecting you: %d</string>
+    <string name="permission_contacts">Contacts — to identify known callers</string>
+    <string name="permission_phone">Phone — to screen calls</string>
+    <string name="permission_no_internet">Internet — NOT requested</string>
+    <string name="permission_no_location">Location — NOT requested</string>
+    <string name="permission_no_storage">Storage — NOT requested</string>
+    <string name="permission_no_camera">Camera/Microphone — NOT requested</string>
 
     <!-- Quick Tile -->
-    <string name="tile_label">¡Wey Ya!</string>
+    <string name="tile_label">Wey Ya!</string>
 
     <!-- Whitelist -->
-    <string name="no_whitelist_hint">Sin números en whitelist</string>
-    <string name="whitelist_number_hint">Número de teléfono</string>
-    <string name="whitelist_label_hint">Etiqueta (opcional)</string>
+    <string name="no_whitelist_hint">No numbers in whitelist</string>
+    <string name="whitelist_number_hint">Phone number</string>
+    <string name="whitelist_label_hint">Label (optional)</string>
 
     <!-- Widget -->
-    <string name="widget_description">Toggle y estadísticas de bloqueo</string>
+    <string name="widget_description">Blocking toggle and stats</string>
 
     <!-- Log -->
-    <string name="no_log_entries">Sin llamadas bloqueadas</string>
+    <string name="no_log_entries">No blocked calls</string>
 
     <!-- Permissions -->
-    <string name="permission_contacts_denied">Identificación de contactos desactivada — los números no guardados se tratarán como desconocidos.</string>
-    <string name="permission_open_settings">Abrir ajustes</string>
-    <string name="permission_retry">Reintentar</string>
+    <string name="permission_contacts_denied">Contact identification disabled — unsaved numbers will be treated as unknown.</string>
+    <string name="permission_open_settings">Open settings</string>
+    <string name="permission_retry">Retry</string>
 
     <!-- Battery -->
-    <string name="battery_optimization_title">Optimización de batería</string>
-    <string name="battery_optimization_description">Algunos teléfonos pueden impedir que ¡Wey Ya! bloquee llamadas en segundo plano. Desactiva la optimización de batería para una protección confiable.</string>
-    <string name="battery_optimization_button">Desactivar</string>
-    <string name="battery_oem_help">¿Tu teléfono sigue cerrando la app?</string>
+    <string name="battery_optimization_title">Battery optimization</string>
+    <string name="battery_optimization_description">Some phones may stop Wey Ya! from blocking calls in the background. Disable battery optimization for reliable protection.</string>
+    <string name="battery_optimization_button">Disable</string>
+    <string name="battery_oem_help">Phone still killing the app?</string>
 
     <!-- Toggle -->
-    <string name="toggle_activate">Activar protección</string>
-    <string name="toggle_deactivate">Desactivar protección</string>
+    <string name="toggle_activate">Activate protection</string>
+    <string name="toggle_deactivate">Deactivate protection</string>
 
     <!-- Stats -->
     <string name="total_stat">Total: %d</string>
 
     <!-- Widget -->
-    <string name="widget_on">Activo</string>
-    <string name="widget_off">Inactivo</string>
+    <string name="widget_on">Active</string>
+    <string name="widget_off">Inactive</string>
 
     <!-- Export -->
-    <string name="csv_exported">CSV exportado</string>
+    <string name="csv_exported">CSV exported</string>
 
     <!-- Navigation -->
-    <string name="navigate_back">Volver</string>
+    <string name="navigate_back">Go back</string>
 
     <!-- Day abbreviations -->
     <string-array name="day_abbreviations">
-        <item>Lun</item>
-        <item>Mar</item>
-        <item>Mié</item>
-        <item>Jue</item>
-        <item>Vie</item>
-        <item>Sáb</item>
-        <item>Dom</item>
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
     </string-array>
 
     <!-- General -->
-    <string name="hidden_number">Número oculto</string>
-    <string name="cancel">Cancelar</string>
-    <string name="confirm">Confirmar</string>
-    <string name="delete">Eliminar</string>
-    <string name="add_from_contacts">Agregar desde contactos</string>
-    <string name="whitelist_invalid_number">Número no válido</string>
-    <string name="csv_export_error">Error al exportar: %s</string>
+    <string name="hidden_number">Hidden number</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="delete">Delete</string>
+    <string name="add_from_contacts">Add from contacts</string>
+    <string name="whitelist_invalid_number">Invalid number</string>
+    <string name="csv_export_error">Export error: %s</string>
 
     <!-- About -->
-    <string name="about_section">Acerca de</string>
-    <string name="about_report_bug">Reportar un problema</string>
-    <string name="about_report_bug_desc">Abre un issue en GitHub</string>
-    <string name="about_rate">Calificar en Play Store</string>
-    <string name="about_rate_desc">Tu opinión nos ayuda a mejorar</string>
-    <string name="about_github">Dar estrella en GitHub</string>
-    <string name="about_github_desc">Apoya el proyecto open source</string>
-    <string name="about_version">Versión %s</string>
+    <string name="about_section">About</string>
+    <string name="about_report_bug">Report a problem</string>
+    <string name="about_report_bug_desc">Open an issue on GitHub</string>
+    <string name="about_rate">Rate on Play Store</string>
+    <string name="about_rate_desc">Your feedback helps us improve</string>
+    <string name="about_github">Star on GitHub</string>
+    <string name="about_github_desc">Support the open source project</string>
+    <string name="about_version">Version %s</string>
+    <string name="dedication">For my mother, with all the love in the world ❤️</string>
 </resources>
