@@ -4,6 +4,18 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-06-04
+
+### Changed
+- Default app language switched from Spanish to English. `values/` now holds the English strings; the Spanish translation moved to the new `values-es/`. Devices with no matching locale now fall back to English instead of Spanish. The other locales (`pt`, `hi`, `in`) are unchanged.
+- README, release-notes documentation, and the bundled privacy policy (`docs/privacy-policy.html`) translated to English.
+
+### Added
+- New `dedication` string resource, localized in all five languages. Replaces the single hardcoded Spanish string previously in `SettingsScreen`.
+
+### Removed
+- Redundant `values-en/strings.xml`, now superseded by the English default in `values/`.
+
 ## [1.2.2] - 2026-06-04
 
 ### Fixed

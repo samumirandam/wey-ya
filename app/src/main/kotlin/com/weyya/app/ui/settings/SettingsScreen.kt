@@ -353,7 +353,7 @@ fun SettingsScreen(
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "Para mi madre, con todo el amor del mundo mundial \u2764\uFE0F",
+                    text = stringResource(R.string.dedication),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     modifier = Modifier

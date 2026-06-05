@@ -4,47 +4,47 @@
 
 # Wey Ya!
 
-Bloqueador de llamadas spam para Android. Sin internet. Sin analytics. Sin anuncios. Todo local.
+Spam call blocker for Android. No internet. No analytics. No ads. Fully local.
 
-## Filosofia
+## Philosophy
 
-**0 bytes enviados a internet. Nunca.**
+**0 bytes sent to the internet. Ever.**
 
-Wey Ya! es una app de codigo abierto que bloquea llamadas no deseadas sin conectarse a ningun servidor. No recopila datos, no muestra publicidad, no tiene permisos de red. Tu informacion nunca sale de tu telefono.
+Wey Ya! is an open source app that blocks unwanted calls without connecting to any server. It collects no data, shows no ads, and has no network permissions. Your information never leaves your phone.
 
 <p align="center">
-  <img src="docs/home.png" alt="Pantalla principal" width="250">
+  <img src="docs/home.png" alt="Main screen" width="250">
   &nbsp;&nbsp;
-  <img src="docs/setting.png" alt="Configuracion" width="250">
+  <img src="docs/setting.png" alt="Settings" width="250">
 </p>
 
 ## Features
 
-- **Dos modos de bloqueo**: solo desconocidos o bloquear todo
-- **Bypass de urgencia**: si alguien llama N veces en X minutos, la llamada pasa (configurable)
-- **Horarios**: define cuando bloquear (soporta cruce de medianoche y multiples dias)
-- **Whitelist**: agrega numeros manualmente o desde contactos
-- **Widget**: toggle rapido y estadisticas en tu home screen (Jetpack Glance)
-- **Quick Tile**: activa/desactiva desde el panel de ajustes rapidos
-- **Privacy Dashboard**: auditoria de permisos en tiempo real, estadisticas de bloqueo
-- **Historial**: log de llamadas bloqueadas con filtros y exportacion CSV
-- **i18n**: Espanol, Ingles, Portugues, Hindi, Indonesio
+- **Two blocking modes**: unknown callers only or block everything
+- **Urgency bypass**: if someone calls N times within X minutes, the call passes through (configurable)
+- **Schedules**: define when to block (supports midnight crossing and multiple days)
+- **Whitelist**: add numbers manually or from contacts
+- **Widget**: quick toggle and stats on your home screen (Jetpack Glance)
+- **Quick Tile**: enable/disable from the quick settings panel
+- **Privacy Dashboard**: real-time permission audit, blocking stats
+- **History**: blocked call log with filters and CSV export
+- **i18n**: English, Spanish, Portuguese, Hindi, Indonesian
 
 ## Stack
 
-| Capa | Tecnologia |
+| Layer | Technology |
 |------|-----------|
 | UI | Jetpack Compose + Material 3 |
-| Arquitectura | MVVM + Hilt DI |
-| Base de datos | Room |
-| Preferencias | DataStore |
+| Architecture | MVVM + Hilt DI |
+| Database | Room |
+| Preferences | DataStore |
 | Widget | Jetpack Glance 1.1.1 |
-| Servicio | CallScreeningService (API 29+) |
+| Service | CallScreeningService (API 29+) |
 | Min SDK | 29 (Android 10) |
 | Target SDK | 35 |
-| Lenguaje | Kotlin 2.1.0 |
+| Language | Kotlin 2.1.0 |
 
-## Compilar
+## Build
 
 ```bash
 git clone https://github.com/samumirandam/wey-ya.git
@@ -52,7 +52,7 @@ cd wey-ya
 ./gradlew assembleDebug
 ```
 
-El APK estara en `app/build/outputs/apk/debug/`.
+The APK will be at `app/build/outputs/apk/debug/`.
 
 ## Tests
 
@@ -60,15 +60,15 @@ El APK estara en `app/build/outputs/apk/debug/`.
 ./gradlew test
 ```
 
-## Contribuir
+## Contributing
 
-- Reporta bugs o sugiere features en [GitHub Issues](https://github.com/samumirandam/wey-ya/issues)
-- PRs bienvenidos
+- Report bugs or suggest features at [GitHub Issues](https://github.com/samumirandam/wey-ya/issues)
+- PRs welcome
 
-## Privacidad
+## Privacy
 
-[Politica de privacidad](docs/privacy-policy.html) — TL;DR: no recopilamos nada, nunca.
+[Privacy policy](docs/privacy-policy.html) — TL;DR: we collect nothing, ever.
 
-## Licencia
+## License
 
-GPL-3.0. Ver [LICENSE](LICENSE).
+GPL-3.0. See [LICENSE](LICENSE).
