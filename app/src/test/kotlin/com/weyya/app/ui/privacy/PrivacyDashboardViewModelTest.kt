@@ -4,21 +4,17 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.weyya.app.data.db.dao.BlockedCallDao
 import com.weyya.app.data.prefs.UserPreferences
-import com.weyya.app.ui.MainDispatcherRule
+import com.weyya.app.ui.ViewModelTest
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PrivacyDashboardViewModelTest {
-
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+class PrivacyDashboardViewModelTest : ViewModelTest() {
 
     private val prefs = mockk<UserPreferences>(relaxed = true)
     private val blockedCallDao = mockk<BlockedCallDao>(relaxed = true)

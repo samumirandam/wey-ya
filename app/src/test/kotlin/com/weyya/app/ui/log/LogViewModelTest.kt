@@ -5,7 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import com.weyya.app.data.db.dao.BlockedCallDao
 import com.weyya.app.data.db.dao.WhitelistDao
 import com.weyya.app.data.db.entity.BlockedCallEntity
-import com.weyya.app.ui.MainDispatcherRule
+import com.weyya.app.ui.ViewModelTest
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -13,14 +13,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LogViewModelTest {
-
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+class LogViewModelTest : ViewModelTest() {
 
     private val blockedCallDao = mockk<BlockedCallDao>(relaxed = true)
     private val whitelistDao = mockk<WhitelistDao>(relaxed = true)

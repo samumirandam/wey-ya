@@ -93,6 +93,16 @@ class WeyYaDatabaseMigrationTest {
         return names
     }
 
+    /** Returns the column names covered by [index], in order. */
+    private fun WeyYaDatabase.indexedColumnsOf(index: String): List<String> {
+        val columns = mutableListOf<String>()
+        query("PRAGMA index_info(`$index`)", emptyArray()).use { cursor ->
+            val nameCol = cursor.getColumnIndexOrThrow("name")
+            while (cursor.moveToNext()) columns.add(cursor.getString(nameCol))
+        }
+        return columns
+    }
+
     @Test
     fun migrate1To6_preservesBlockedCallAndValidatesSchema() = runBlocking {
         createLegacyDb(version = 1) { db ->
@@ -118,7 +128,7 @@ class WeyYaDatabaseMigrationTest {
     }
 
     @Test
-    fun migrate5To6_createsIndexes() = runBlocking {
+    fun migrate5To6_createsIndexes(): Unit = runBlocking {
         // Start at v1 and let the chain run; MIGRATION_5_6 must create both indexes.
         createLegacyDb(version = 1) { db ->
             db.execSQL(
@@ -131,6 +141,9 @@ class WeyYaDatabaseMigrationTest {
         try {
             assertThat(room.indexNamesOf("blocked_calls")).contains("index_blocked_calls_timestamp")
             assertThat(room.indexNamesOf("schedules")).contains("index_schedules_enabled")
+            // Assert the column too: a same-named index on the wrong column would otherwise pass.
+            assertThat(room.indexedColumnsOf("index_blocked_calls_timestamp")).containsExactly("timestamp")
+            assertThat(room.indexedColumnsOf("index_schedules_enabled")).containsExactly("enabled")
         } finally {
             room.close()
         }

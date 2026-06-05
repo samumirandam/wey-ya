@@ -7,7 +7,7 @@ import com.weyya.app.data.db.dao.ScheduleDao
 import com.weyya.app.data.prefs.UserPreferences
 import com.weyya.app.domain.ScheduleChecker
 import com.weyya.app.domain.model.BlockingMode
-import com.weyya.app.ui.MainDispatcherRule
+import com.weyya.app.ui.ViewModelTest
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -16,14 +16,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MainViewModelTest {
-
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+class MainViewModelTest : ViewModelTest() {
 
     private val prefs = mockk<UserPreferences>(relaxed = true)
     private val blockedCallDao = mockk<BlockedCallDao>(relaxed = true)

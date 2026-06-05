@@ -7,7 +7,7 @@ import com.weyya.app.data.db.entity.ScheduleEntity
 import com.weyya.app.data.prefs.UserPreferences
 import com.weyya.app.data.telephony.SimInfo
 import com.weyya.app.data.telephony.SimResolver
-import com.weyya.app.ui.MainDispatcherRule
+import com.weyya.app.ui.ViewModelTest
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -16,14 +16,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SettingsViewModelTest {
-
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+class SettingsViewModelTest : ViewModelTest() {
 
     private val prefs = mockk<UserPreferences>(relaxed = true)
     private val scheduleDao = mockk<ScheduleDao>(relaxed = true)

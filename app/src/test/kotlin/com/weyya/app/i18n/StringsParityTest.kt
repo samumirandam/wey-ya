@@ -11,37 +11,46 @@ import javax.xml.parsers.DocumentBuilderFactory
  * resource names as the English base. A missing key falls back silently to English at runtime,
  * so this test makes desyncs fail the build instead.
  *
+ * Locale directories are discovered from disk (not hardcoded), so a newly added `values-xx/`
+ * is checked automatically — the test can't silently skip a language it doesn't know about.
+ *
  * Pure JVM (no Robolectric) — it reads the XML files straight off disk.
  */
 class StringsParityTest {
 
-    private val locales = listOf("es", "hi", "in", "pt")
+    // Android locale qualifiers: language (2-3 lowercase) with an optional -rXX region.
+    // Excludes non-locale qualifiers like values-night, values-v29, values-w600dp.
+    private val localeDirPattern = Regex("^values-[a-z]{2,3}(-r[A-Z]{2})?$")
 
     @Test
     fun `every locale defines the same string keys as the base`() {
-        val baseKeys = parseResourceNames(resFile(null))
+        val res = resDir()
+        val baseKeys = parseResourceNames(File(res, "values/strings.xml"))
 
-        val missingByLocale = locales.associateWith { locale ->
-            baseKeys - parseResourceNames(resFile(locale))
+        val localeDirs = (res.listFiles { f -> f.isDirectory && localeDirPattern.matches(f.name) } ?: emptyArray())
+            .filter { File(it, "strings.xml").exists() }
+            .sortedBy { it.name }
+
+        // Guard: if path resolution ever breaks, fail loudly instead of passing vacuously.
+        assertThat(localeDirs).isNotEmpty()
+
+        val missingByLocale = localeDirs.associate { dir ->
+            dir.name to (baseKeys - parseResourceNames(File(dir, "strings.xml")))
         }.filterValues { it.isNotEmpty() }
 
-        val extraByLocale = locales.associateWith { locale ->
-            parseResourceNames(resFile(locale)) - baseKeys
+        val extraByLocale = localeDirs.associate { dir ->
+            parseResourceNames(File(dir, "strings.xml")).let { dir.name to (it - baseKeys) }
         }.filterValues { it.isNotEmpty() }
 
         assertThat(missingByLocale).isEmpty()
         assertThat(extraByLocale).isEmpty()
     }
 
-    /** Resolves values/strings.xml (base when [locale] is null) regardless of the test working dir. */
-    private fun resFile(locale: String?): File {
-        val dir = if (locale == null) "values" else "values-$locale"
-        val candidates = listOf(
-            "src/main/res/$dir/strings.xml",
-            "app/src/main/res/$dir/strings.xml",
-        )
-        return candidates.map(::File).firstOrNull { it.exists() }
-            ?: error("strings.xml not found for '$dir' (cwd=${File(".").absolutePath})")
+    /** Resolves the res/ directory regardless of the test working dir (module root or repo root). */
+    private fun resDir(): File {
+        val candidates = listOf("src/main/res", "app/src/main/res")
+        return candidates.map(::File).firstOrNull { it.isDirectory }
+            ?: error("res directory not found (cwd=${File(".").absolutePath})")
     }
 
     /** Collects the `name` of every <string>, <plurals> and <string-array> element. */
