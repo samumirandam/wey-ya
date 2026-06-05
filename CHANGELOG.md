@@ -4,6 +4,11 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-06-04
+
+### Fixed
+- Edge-to-edge on Android 15 (SDK 35) no longer triggers Play Console "deprecated window API" warnings. The 1.2.2 fix (upgrading `androidx.activity` to 1.10.1) **did not** resolve this: that library's `enableEdgeToEdge()` still calls `Window.setStatusBarColor` / `Window.setNavigationBarColor` and sets `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES` internally (verified in 1.10.1 bytecode). Replaced `enableEdgeToEdge()` in `MainActivity` with `WindowCompat.setDecorFitsSystemWindows(window, false)`, which enables edge-to-edge without the deprecated calls. System-bar icon contrast is now managed in `WeyYaTheme` via `WindowInsetsControllerCompat` (`isAppearanceLight*Bars`), and cutout drawing is preserved by the `android:windowLayoutInDisplayCutoutMode` theme attribute. With `enableEdgeToEdge()` unreferenced, R8 strips the offending `EdgeToEdge` classes from the release bundle. No dependency changes.
+
 ## [1.3.0] - 2026-06-04
 
 ### Changed
@@ -19,7 +24,7 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [1.2.2] - 2026-06-04
 
 ### Fixed
-- Edge-to-edge on Android 15 (SDK 35) no longer triggers Play Console warnings about deprecated window APIs. Updated `androidx.activity` 1.9.3 → 1.10.1, whose `enableEdgeToEdge()` no longer calls the deprecated `Window.setStatusBarColor` / `Window.setNavigationBarColor` nor sets `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES`.
+- Updated `androidx.activity` 1.9.3 → 1.10.1. **Note:** this was intended to clear Play Console's deprecated-window-API warnings, but it did not — `enableEdgeToEdge()` still calls those APIs internally even in 1.10.1. The actual fix landed in 1.3.1.
 - Removed redundant `android:statusBarColor` / `android:navigationBarColor` declarations from `Theme.WeyYa.Main` in `themes.xml`; transparent system bars are handled at runtime by `enableEdgeToEdge()`. No visual change — content already drew behind the bars and all screens handle insets via `WindowInsets.navigationBars`.
 
 ## [1.2.1] - 2026-05-02
