@@ -22,8 +22,14 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withTimeoutOrNull
 
 class WeyYaScreeningService : CallScreeningService() {
+
+    private companion object {
+        const val SCREENING_TIMEOUT_MS = 4000L
+    }
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
@@ -58,15 +64,22 @@ class WeyYaScreeningService : CallScreeningService() {
         val number = callDetails.handle?.schemeSpecificPart
         val callSimSlot = entryPoint.simResolver().resolveSlotFromCallDetails(callDetails)
 
-        val (isActive, mode, threshold, window, isContact, isWhitelisted, isWithinSchedule) =
-            runBlocking(Dispatchers.IO) {
+        // Android gives onScreenCall a limited window to respond. Cap the I/O so a slow or
+        // stuck DB/contacts query can't hang screening — on timeout we fail open (allow).
+        // The Room reads suspend and so are cancellable; ContactsResolver.isContact is a
+        // blocking ContentResolver call, so wrap it in runInterruptible to let the timeout
+        // interrupt it instead of silently ignoring the cancellation.
+        val params = runBlocking(Dispatchers.IO) {
+            withTimeoutOrNull(SCREENING_TIMEOUT_MS) {
                 val prefs = entryPoint.userPreferences()
                 ScreeningParams(
                     isActive = prefs.isActive.first(),
                     mode = prefs.blockingMode.first(),
                     threshold = prefs.attemptThreshold.first(),
                     window = prefs.timeWindowMinutes.first(),
-                    isContact = number?.let { entryPoint.contactsResolver().isContact(it) } ?: false,
+                    isContact = number?.let {
+                        runInterruptible { entryPoint.contactsResolver().isContact(it) }
+                    } ?: false,
                     isWhitelisted = number?.let { entryPoint.whitelistDao().isWhitelisted(it) } ?: false,
                     isWithinSchedule = entryPoint.scheduleChecker().isBlockingActive(
                         entryPoint.scheduleDao().getEnabledSync(),
@@ -74,6 +87,15 @@ class WeyYaScreeningService : CallScreeningService() {
                     ),
                 )
             }
+        }
+
+        if (params == null) {
+            Log.w("WeyYaScreening", "Screening timed out after ${SCREENING_TIMEOUT_MS}ms, allowing call")
+            respondToCall(callDetails, CallResponse.Builder().build())
+            return
+        }
+
+        val (isActive, mode, threshold, window, isContact, isWhitelisted, isWithinSchedule) = params
 
         val decision = entryPoint.callDecisionEngine().decide(
             isActive = isActive,

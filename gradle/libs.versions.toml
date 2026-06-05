@@ -17,6 +17,7 @@ core-splashscreen = "1.0.1"
 junit = "4.13.2"
 truth = "1.4.4"
 turbine = "1.2.0"
+robolectric = "4.14.1"
 
 [libraries]
 # Compose
@@ -68,6 +69,7 @@ coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

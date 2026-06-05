@@ -1,10 +1,12 @@
 package com.weyya.app.data.prefs
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -12,12 +14,18 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.weyya.app.domain.model.BlockingMode
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
 const val DEFAULT_ATTEMPT_THRESHOLD = 3
+const val MIN_ATTEMPT_THRESHOLD = 2
+const val MAX_ATTEMPT_THRESHOLD = 10
 const val DEFAULT_TIME_WINDOW_MINUTES = 5
+const val MIN_TIME_WINDOW_MINUTES = 1
+const val MAX_TIME_WINDOW_MINUTES = 30
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "weyya_prefs")
 
@@ -35,22 +43,42 @@ class UserPreferences @Inject constructor(
         val BATTERY_DISMISSED = booleanPreferencesKey("battery_dismissed")
     }
 
-    val isActive: Flow<Boolean> = context.dataStore.data
+    // A corrupt or unreadable DataStore throws IOException on read. Degrade to empty
+    // preferences (defaults) instead of crashing the call-screening path.
+    private val data: Flow<Preferences> = context.dataStore.data
+        .catch { e ->
+            if (e is IOException) {
+                Log.e("UserPreferences", "Failed to read preferences, using defaults", e)
+                emit(emptyPreferences())
+            } else {
+                throw e
+            }
+        }
+
+    val isActive: Flow<Boolean> = data
         .map { it[Keys.IS_ACTIVE] ?: false }
 
-    val blockingMode: Flow<BlockingMode> = context.dataStore.data
+    val blockingMode: Flow<BlockingMode> = data
         .map { BlockingMode.fromString(it[Keys.BLOCKING_MODE] ?: "unknown") }
 
-    val attemptThreshold: Flow<Int> = context.dataStore.data
-        .map { it[Keys.ATTEMPT_THRESHOLD] ?: DEFAULT_ATTEMPT_THRESHOLD }
+    // Coerce on read as well as write: a value persisted below the floor by an older
+    // build (e.g. threshold 1) is self-healed instead of reaching the decision engine.
+    val attemptThreshold: Flow<Int> = data
+        .map {
+            (it[Keys.ATTEMPT_THRESHOLD] ?: DEFAULT_ATTEMPT_THRESHOLD)
+                .coerceIn(MIN_ATTEMPT_THRESHOLD, MAX_ATTEMPT_THRESHOLD)
+        }
 
-    val timeWindowMinutes: Flow<Int> = context.dataStore.data
-        .map { it[Keys.TIME_WINDOW_MINUTES] ?: DEFAULT_TIME_WINDOW_MINUTES }
+    val timeWindowMinutes: Flow<Int> = data
+        .map {
+            (it[Keys.TIME_WINDOW_MINUTES] ?: DEFAULT_TIME_WINDOW_MINUTES)
+                .coerceIn(MIN_TIME_WINDOW_MINUTES, MAX_TIME_WINDOW_MINUTES)
+        }
 
-    val firstActivationDate: Flow<Long?> = context.dataStore.data
+    val firstActivationDate: Flow<Long?> = data
         .map { it[Keys.FIRST_ACTIVATION_DATE] }
 
-    val batteryDismissed: Flow<Boolean> = context.dataStore.data
+    val batteryDismissed: Flow<Boolean> = data
         .map { it[Keys.BATTERY_DISMISSED] ?: false }
 
     suspend fun setActive(active: Boolean) {
@@ -67,11 +95,18 @@ class UserPreferences @Inject constructor(
     }
 
     suspend fun setAttemptThreshold(threshold: Int) {
-        context.dataStore.edit { it[Keys.ATTEMPT_THRESHOLD] = threshold.coerceIn(1, 10) }
+        // Floor of MIN_ATTEMPT_THRESHOLD: a threshold of 1 lets every unknown caller through
+        // on the first attempt, defeating the block. The Settings slider exposes 2..5; the
+        // wider clamp is a safety bound for any value arriving from outside the UI.
+        context.dataStore.edit {
+            it[Keys.ATTEMPT_THRESHOLD] = threshold.coerceIn(MIN_ATTEMPT_THRESHOLD, MAX_ATTEMPT_THRESHOLD)
+        }
     }
 
     suspend fun setTimeWindowMinutes(minutes: Int) {
-        context.dataStore.edit { it[Keys.TIME_WINDOW_MINUTES] = minutes.coerceIn(1, 30) }
+        context.dataStore.edit {
+            it[Keys.TIME_WINDOW_MINUTES] = minutes.coerceIn(MIN_TIME_WINDOW_MINUTES, MAX_TIME_WINDOW_MINUTES)
+        }
     }
 
     suspend fun setBatteryDismissed(dismissed: Boolean) {
