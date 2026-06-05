@@ -21,7 +21,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 const val DEFAULT_ATTEMPT_THRESHOLD = 3
+const val MIN_ATTEMPT_THRESHOLD = 2
+const val MAX_ATTEMPT_THRESHOLD = 10
 const val DEFAULT_TIME_WINDOW_MINUTES = 5
+const val MIN_TIME_WINDOW_MINUTES = 1
+const val MAX_TIME_WINDOW_MINUTES = 30
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "weyya_prefs")
 
@@ -57,11 +61,19 @@ class UserPreferences @Inject constructor(
     val blockingMode: Flow<BlockingMode> = data
         .map { BlockingMode.fromString(it[Keys.BLOCKING_MODE] ?: "unknown") }
 
+    // Coerce on read as well as write: a value persisted below the floor by an older
+    // build (e.g. threshold 1) is self-healed instead of reaching the decision engine.
     val attemptThreshold: Flow<Int> = data
-        .map { it[Keys.ATTEMPT_THRESHOLD] ?: DEFAULT_ATTEMPT_THRESHOLD }
+        .map {
+            (it[Keys.ATTEMPT_THRESHOLD] ?: DEFAULT_ATTEMPT_THRESHOLD)
+                .coerceIn(MIN_ATTEMPT_THRESHOLD, MAX_ATTEMPT_THRESHOLD)
+        }
 
     val timeWindowMinutes: Flow<Int> = data
-        .map { it[Keys.TIME_WINDOW_MINUTES] ?: DEFAULT_TIME_WINDOW_MINUTES }
+        .map {
+            (it[Keys.TIME_WINDOW_MINUTES] ?: DEFAULT_TIME_WINDOW_MINUTES)
+                .coerceIn(MIN_TIME_WINDOW_MINUTES, MAX_TIME_WINDOW_MINUTES)
+        }
 
     val firstActivationDate: Flow<Long?> = data
         .map { it[Keys.FIRST_ACTIVATION_DATE] }
@@ -83,13 +95,18 @@ class UserPreferences @Inject constructor(
     }
 
     suspend fun setAttemptThreshold(threshold: Int) {
-        // Minimum 2: a threshold of 1 lets every unknown caller through on the first
-        // attempt, defeating the block. Matches the Settings slider range (2..5).
-        context.dataStore.edit { it[Keys.ATTEMPT_THRESHOLD] = threshold.coerceIn(2, 10) }
+        // Floor of MIN_ATTEMPT_THRESHOLD: a threshold of 1 lets every unknown caller through
+        // on the first attempt, defeating the block. The Settings slider exposes 2..5; the
+        // wider clamp is a safety bound for any value arriving from outside the UI.
+        context.dataStore.edit {
+            it[Keys.ATTEMPT_THRESHOLD] = threshold.coerceIn(MIN_ATTEMPT_THRESHOLD, MAX_ATTEMPT_THRESHOLD)
+        }
     }
 
     suspend fun setTimeWindowMinutes(minutes: Int) {
-        context.dataStore.edit { it[Keys.TIME_WINDOW_MINUTES] = minutes.coerceIn(1, 30) }
+        context.dataStore.edit {
+            it[Keys.TIME_WINDOW_MINUTES] = minutes.coerceIn(MIN_TIME_WINDOW_MINUTES, MAX_TIME_WINDOW_MINUTES)
+        }
     }
 
     suspend fun setBatteryDismissed(dismissed: Boolean) {

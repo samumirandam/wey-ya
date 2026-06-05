@@ -98,8 +98,9 @@ class WeyYaDatabaseMigrationTest {
             assertThat(calls).hasSize(1)
             assertThat(calls[0].phoneNumber).isEqualTo("5551234")
             assertThat(calls[0].attemptCount).isEqualTo(2)
-            // whitelist (added in v4) is queryable and empty.
-            assertThat(room.scheduleDao().getAll().first()).isEmpty()
+            // Tables added by later migrations are present and empty after the chain.
+            assertThat(room.whitelistDao().getAll().first()).isEmpty() // added in v4 (MIGRATION_3_4)
+            assertThat(room.scheduleDao().getAll().first()).isEmpty() // created in v2 (MIGRATION_1_2)
         } finally {
             room.close()
         }

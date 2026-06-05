@@ -66,6 +66,15 @@ android {
         compose = true
     }
 
+    lint {
+        // Lint runs in CI for signal but does not gate the build yet: the codebase has no
+        // baseline, so a pre-existing finding must not fail unrelated PRs. To make it gating,
+        // run `./gradlew updateLintBaseline`, commit lint-baseline.xml, then set
+        // `baseline = file("lint-baseline.xml")` and `abortOnError = true`.
+        abortOnError = false
+        warningsAsErrors = false
+    }
+
     testOptions {
         unitTests.isReturnDefaultValues = true
         // Required by Robolectric (migration tests run on the JVM with real SQLite).
