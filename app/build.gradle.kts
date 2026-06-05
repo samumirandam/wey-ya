@@ -68,6 +68,8 @@ android {
 
     testOptions {
         unitTests.isReturnDefaultValues = true
+        // Required by Robolectric (migration tests run on the JVM with real SQLite).
+        unitTests.isIncludeAndroidResources = true
     }
 }
 
@@ -123,6 +125,7 @@ dependencies {
     testImplementation(libs.truth)
     testImplementation(libs.turbine)
     testImplementation(libs.coroutines.test)
+    testImplementation(libs.robolectric)
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.test.manifest)
