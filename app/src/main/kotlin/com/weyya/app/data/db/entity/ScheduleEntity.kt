@@ -1,9 +1,11 @@
 package com.weyya.app.data.db.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "schedules")
+// Indexed on enabled: getEnabledSync() runs in the synchronous CallScreeningService path.
+@Entity(tableName = "schedules", indices = [Index("enabled")])
 data class ScheduleEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val daysOfWeek: String, // Comma-separated ISO days: "1,2,3,4,5" (1=Monday … 7=Sunday)

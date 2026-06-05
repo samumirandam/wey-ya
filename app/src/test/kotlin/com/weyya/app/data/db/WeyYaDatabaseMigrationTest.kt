@@ -16,7 +16,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 /**
- * Validates the full Room migration chain (v1 → v5) against real SQLite via Robolectric,
+ * Validates the full Room migration chain (v1 → v6) against real SQLite via Robolectric,
  * so it runs in plain unit tests (`./gradlew test`) without an emulator.
  *
  * Strategy: build the database at an old version by hand, insert data, then open it through
@@ -78,12 +78,23 @@ class WeyYaDatabaseMigrationTest {
                 WeyYaDatabase.MIGRATION_2_3,
                 WeyYaDatabase.MIGRATION_3_4,
                 WeyYaDatabase.MIGRATION_4_5,
+                WeyYaDatabase.MIGRATION_5_6,
             )
             .allowMainThreadQueries()
             .build()
 
+    /** Returns the index names present on [table]. */
+    private fun WeyYaDatabase.indexNamesOf(table: String): List<String> {
+        val names = mutableListOf<String>()
+        query("PRAGMA index_list(`$table`)", emptyArray()).use { cursor ->
+            val nameCol = cursor.getColumnIndexOrThrow("name")
+            while (cursor.moveToNext()) names.add(cursor.getString(nameCol))
+        }
+        return names
+    }
+
     @Test
-    fun migrate1To5_preservesBlockedCallAndValidatesSchema() = runBlocking {
+    fun migrate1To6_preservesBlockedCallAndValidatesSchema() = runBlocking {
         createLegacyDb(version = 1) { db ->
             db.execSQL(
                 "INSERT INTO blocked_calls (phoneNumber, timestamp, attemptCount, wasEventuallyAllowed) " +
@@ -93,7 +104,7 @@ class WeyYaDatabaseMigrationTest {
 
         val room = openWithRoom()
         try {
-            // Opening already ran v1→v5 and Room validated the final schema (would throw otherwise).
+            // Opening already ran v1→v6 and Room validated the final schema (would throw otherwise).
             val calls = room.blockedCallDao().getAll().first()
             assertThat(calls).hasSize(1)
             assertThat(calls[0].phoneNumber).isEqualTo("5551234")
@@ -107,7 +118,26 @@ class WeyYaDatabaseMigrationTest {
     }
 
     @Test
-    fun migrate2To5_convertsDayOfWeekIntToCsvAndAddsNullSimSlot() = runBlocking {
+    fun migrate5To6_createsIndexes() = runBlocking {
+        // Start at v1 and let the chain run; MIGRATION_5_6 must create both indexes.
+        createLegacyDb(version = 1) { db ->
+            db.execSQL(
+                "INSERT INTO blocked_calls (phoneNumber, timestamp, attemptCount, wasEventuallyAllowed) " +
+                    "VALUES ('5551234', 1000, 2, 0)",
+            )
+        }
+
+        val room = openWithRoom()
+        try {
+            assertThat(room.indexNamesOf("blocked_calls")).contains("index_blocked_calls_timestamp")
+            assertThat(room.indexNamesOf("schedules")).contains("index_schedules_enabled")
+        } finally {
+            room.close()
+        }
+    }
+
+    @Test
+    fun migrate2To6_convertsDayOfWeekIntToCsvAndAddsNullSimSlot() = runBlocking {
         createLegacyDb(version = 2) { db ->
             db.execSQL(
                 "INSERT INTO schedules (dayOfWeek, startTime, endTime, enabled) " +

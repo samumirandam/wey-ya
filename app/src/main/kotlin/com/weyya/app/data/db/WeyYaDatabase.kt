@@ -13,7 +13,7 @@ import com.weyya.app.data.db.entity.WhitelistEntity
 
 @Database(
     entities = [BlockedCallEntity::class, ScheduleEntity::class, WhitelistEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = true,
 )
 abstract class WeyYaDatabase : RoomDatabase() {
@@ -81,6 +81,15 @@ abstract class WeyYaDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 // null = applies to every SIM (preserves pre-existing behavior)
                 db.execSQL("ALTER TABLE `schedules` ADD COLUMN `simSlot` INTEGER DEFAULT NULL")
+            }
+        }
+
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Index names must match what Room expects (index_<table>_<column>) so the
+                // schema-identity check passes when the DB is opened after the migration.
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_blocked_calls_timestamp` ON `blocked_calls` (`timestamp`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_schedules_enabled` ON `schedules` (`enabled`)")
             }
         }
     }

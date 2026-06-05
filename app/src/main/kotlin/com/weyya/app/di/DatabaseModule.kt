@@ -30,6 +30,7 @@ object DatabaseModule {
                 WeyYaDatabase.MIGRATION_2_3,
                 WeyYaDatabase.MIGRATION_3_4,
                 WeyYaDatabase.MIGRATION_4_5,
+                WeyYaDatabase.MIGRATION_5_6,
             )
             .build()
 
