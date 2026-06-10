@@ -8,6 +8,7 @@ import com.weyya.app.data.db.dao.BlockedCallDao
 import com.weyya.app.data.db.dao.WhitelistDao
 import com.weyya.app.data.db.entity.BlockedCallEntity
 import com.weyya.app.data.db.entity.WhitelistEntity
+import com.weyya.app.util.CsvUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -70,8 +71,8 @@ class LogViewModel @Inject constructor(
                         writer.write("phone_number,timestamp,date_time,attempt_count,was_allowed")
                         writer.newLine()
                         calls.forEach { call ->
-                            val number = csvField(call.phoneNumber ?: "hidden")
-                            val date = csvField(dateFormat.format(Date(call.timestamp)))
+                            val number = CsvUtils.csvField(call.phoneNumber ?: "hidden")
+                            val date = CsvUtils.csvField(dateFormat.format(Date(call.timestamp)))
                             writer.write("$number,${call.timestamp},$date,${call.attemptCount},${call.wasEventuallyAllowed}")
                             writer.newLine()
                         }
@@ -82,7 +83,4 @@ class LogViewModel @Inject constructor(
             }
         }
     }
-
-    private fun csvField(value: String): String =
-        if (value.contains(Regex("[,\"\n\r]"))) "\"${value.replace("\"", "\"\"")}\"" else value
 }

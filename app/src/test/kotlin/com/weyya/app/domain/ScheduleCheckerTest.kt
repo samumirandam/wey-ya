@@ -1,7 +1,7 @@
 package com.weyya.app.domain
 
 import com.google.common.truth.Truth.assertThat
-import com.weyya.app.data.db.entity.ScheduleEntity
+import com.weyya.app.domain.model.Schedule
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDateTime
@@ -40,6 +40,28 @@ class ScheduleCheckerTest {
         val result = checker.isBlockingActive(
             listOf(wednesday),
             now = LocalDateTime.of(2026, 4, 9, 20, 0), // Thursday 20:00
+        )
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `endTime is inclusive - call exactly at endTime is blocked`() {
+        // 09:00-17:00, a call at exactly 17:00:00 falls inside `in startTime..endTime`.
+        // Pins the inclusive upper bound so a refactor to `<` can't change it silently.
+        val schedule = scheduleFor(dayOfWeek = 4, start = "09:00", end = "17:00")
+        val result = checker.isBlockingActive(
+            listOf(schedule),
+            now = LocalDateTime.of(2026, 4, 9, 17, 0, 0), // Thursday 17:00:00
+        )
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `one minute past endTime is not blocked`() {
+        val schedule = scheduleFor(dayOfWeek = 4, start = "09:00", end = "17:00")
+        val result = checker.isBlockingActive(
+            listOf(schedule),
+            now = LocalDateTime.of(2026, 4, 9, 17, 1, 0), // Thursday 17:01
         )
         assertThat(result).isFalse()
     }
@@ -124,9 +146,8 @@ class ScheduleCheckerTest {
 
     @Test
     fun `multi-day schedule matches any included day`() {
-        val weekdays = ScheduleEntity(
-            id = 0,
-            daysOfWeek = "1,2,3,4,5",
+        val weekdays = Schedule(
+            days = setOf(1, 2, 3, 4, 5),
             startTime = "09:00",
             endTime = "17:00",
             enabled = true,
@@ -308,9 +329,8 @@ class ScheduleCheckerTest {
         end: String,
         enabled: Boolean = true,
         simSlot: Int? = null,
-    ) = ScheduleEntity(
-        id = 0,
-        daysOfWeek = dayOfWeek.toString(),
+    ) = Schedule(
+        days = setOf(dayOfWeek),
         startTime = start,
         endTime = end,
         enabled = enabled,

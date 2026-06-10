@@ -6,6 +6,7 @@ import android.service.quicksettings.TileService
 import com.weyya.app.R
 import com.weyya.app.data.prefs.UserPreferences
 import com.weyya.app.domain.model.BlockingMode
+import com.weyya.app.ui.common.labelRes
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -26,32 +27,31 @@ class WeyYaTileService : TileService() {
 
     override fun onStartListening() {
         super.onStartListening()
-        updateTile()
-    }
-
-    override fun onClick() {
-        super.onClick()
-        runBlocking(kotlinx.coroutines.Dispatchers.IO) {
-            val prefs = entryPoint().userPreferences()
-            prefs.setActive(!prefs.isActive.first())
-        }
-        updateTile()
-    }
-
-    private fun updateTile() {
-        val tile = qsTile ?: return
         val (isActive, mode) = runBlocking(kotlinx.coroutines.Dispatchers.IO) {
             val prefs = entryPoint().userPreferences()
             Pair(prefs.isActive.first(), prefs.blockingMode.first())
         }
+        updateTile(isActive, mode)
+    }
 
+    override fun onClick() {
+        super.onClick()
+        // Toggle and read mode in a single blocking section, then paint the new state —
+        // no second DataStore read just to re-fetch what we already wrote.
+        val (isActive, mode) = runBlocking(kotlinx.coroutines.Dispatchers.IO) {
+            val prefs = entryPoint().userPreferences()
+            val newActive = !prefs.isActive.first()
+            prefs.setActive(newActive)
+            Pair(newActive, prefs.blockingMode.first())
+        }
+        updateTile(isActive, mode)
+    }
+
+    private fun updateTile(isActive: Boolean, mode: BlockingMode) {
+        val tile = qsTile ?: return
         tile.icon = Icon.createWithResource(this, R.drawable.ic_tile)
         tile.state = if (isActive) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.subtitle = when {
-            !isActive -> getString(R.string.protection_off)
-            mode == BlockingMode.ALL_CALLERS -> getString(R.string.mode_all)
-            else -> getString(R.string.mode_unknown)
-        }
+        tile.subtitle = if (!isActive) getString(R.string.protection_off) else getString(mode.labelRes())
         tile.updateTile()
     }
 }

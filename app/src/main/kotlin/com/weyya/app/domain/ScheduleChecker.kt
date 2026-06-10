@@ -1,7 +1,6 @@
 package com.weyya.app.domain
 
-import android.util.Log
-import com.weyya.app.data.db.entity.ScheduleEntity
+import com.weyya.app.domain.model.Schedule
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeParseException
@@ -22,7 +21,7 @@ class ScheduleChecker @Inject constructor() {
      * fallback that preserves pre-dual-SIM behavior.
      */
     fun isBlockingActive(
-        schedules: List<ScheduleEntity>,
+        schedules: List<Schedule>,
         callSimSlot: Int? = null,
         now: LocalDateTime = LocalDateTime.now(),
     ): Boolean {
@@ -47,17 +46,17 @@ class ScheduleChecker @Inject constructor() {
                 startTime = LocalTime.parse(schedule.startTime)
                 endTime = LocalTime.parse(schedule.endTime)
             } catch (_: DateTimeParseException) {
-                Log.w("ScheduleChecker", "Malformed schedule time: ${schedule.startTime}-${schedule.endTime}")
+                // Malformed time → ignore this schedule rather than crash screening.
                 return@any false
             }
             val crossesMidnight = endTime <= startTime
 
             if (crossesMidnight) {
                 // PM part: today's day + time >= start. AM part: yesterday's day + time <= end.
-                (todayIso in schedule.daysList() && currentTime >= startTime) ||
-                    (yesterdayIso in schedule.daysList() && currentTime <= endTime)
+                (todayIso in schedule.days && currentTime >= startTime) ||
+                    (yesterdayIso in schedule.days && currentTime <= endTime)
             } else {
-                todayIso in schedule.daysList() && currentTime in startTime..endTime
+                todayIso in schedule.days && currentTime in startTime..endTime
             }
         }
     }

@@ -54,7 +54,7 @@ class MainViewModel @Inject constructor(
         scheduleDao.getEnabled(),
         minuteTicker,
     ) { schedules, _ ->
-        scheduleChecker.isBlockingActive(schedules)
+        scheduleChecker.isBlockingActive(schedules.map { it.toDomain() })
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
 
     private val _hasScreeningRole = MutableStateFlow(false)
