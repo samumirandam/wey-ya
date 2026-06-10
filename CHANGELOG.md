@@ -4,6 +4,29 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2026-06-10
+
+Maintenance release: code quality, architecture, and test coverage. No new
+features and no user-visible behavior change, except the screening fixes noted
+below. Bundles the work merged after 1.3.1 (PRs #5, #6, #7).
+
+### Fixed
+- Screening no longer hangs: `onScreenCall` I/O is capped with `withTimeoutOrNull` and fails open (allows the call) if a DB/contacts query stalls. (#5)
+- `attemptThreshold` minimum raised from 1 to 2 to match the Settings slider (2..5). A threshold of 1 let every unknown caller through on its first attempt. (#5)
+- DataStore reads degrade to defaults on `IOException` instead of crashing the reader. (#5)
+- Blank/empty phone numbers (degenerate `tel:` URIs) are now treated as hidden — same path as a null number — instead of being queried and recorded as an empty string. (#7)
+
+### Changed
+- Room database upgraded to version 6: added indexes on `blocked_calls(timestamp)` and `schedules(enabled)` to remove table scans on the screening hot path. Migration 5→6 is tested. (#6)
+- Domain layer is now Android/Room-free: `ScheduleChecker` depends on a pure `Schedule` model (with a `ScheduleEntity.toDomain()` mapper) instead of the Room entity and `android.util.Log`. (#7)
+- `BlockingMode → label` mapping centralized in a single `BlockingMode.labelRes()` extension, replacing three duplicated `when` blocks (tile, widget, main screen). (#7)
+- Internal cleanups: single `runBlocking` in the tile toggle, a shared `recordCall()` helper in the screening service, and extracted `CsvUtils`/`TimeUtils.daysBetween()` utilities. (#7)
+
+### Added (internal — not shipped to users)
+- CI now runs `lintDebug`, `assembleDebug`, and detekt (with baseline) so a broken build, lint regression, or static-analysis finding fails the pipeline. (#5, #6)
+- `StringsParityTest` fails the build when locale keys desync from the base strings. (#6)
+- Test coverage expanded: Room migration tests to v6, a ViewModel suite (Main/Log/Settings/PrivacyDashboard) with MockK, and unit tests for `ScheduleChecker` boundaries, `BlockingMode` round-trip, `CsvUtils`, and `TimeUtils` helpers. (#5, #6, #7)
+
 ## [1.3.1] - 2026-06-04
 
 ### Fixed
