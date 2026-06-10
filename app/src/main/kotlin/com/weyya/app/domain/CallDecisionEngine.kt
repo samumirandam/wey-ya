@@ -30,7 +30,7 @@ class CallDecisionEngine @Inject constructor(
             return CallDecision.Allow()
         }
 
-        if (phoneNumber == null) {
+        if (phoneNumber.isNullOrBlank()) {
             return CallDecision.Reject("Hidden number")
         }
 

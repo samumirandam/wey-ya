@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-private const val MILLIS_PER_DAY = 86_400_000L
-
 @HiltViewModel
 class PrivacyDashboardViewModel @Inject constructor(
     prefs: UserPreferences,
@@ -32,7 +30,7 @@ class PrivacyDashboardViewModel @Inject constructor(
     val daysSinceFirstActivation: StateFlow<Int> = prefs.firstActivationDate
         .map { firstDate ->
             if (firstDate == null) 0
-            else ((System.currentTimeMillis() - firstDate) / MILLIS_PER_DAY).toInt().coerceAtLeast(0)
+            else TimeUtils.daysBetween(firstDate, System.currentTimeMillis())
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
 }

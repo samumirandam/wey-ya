@@ -3,6 +3,7 @@ package com.weyya.app.data.db.entity
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.weyya.app.domain.model.Schedule
 
 // Indexed on enabled: getEnabledSync() runs in the synchronous CallScreeningService path.
 @Entity(tableName = "schedules", indices = [Index("enabled")])
@@ -16,6 +17,15 @@ data class ScheduleEntity(
     val simSlot: Int? = null,
 ) {
     fun daysList(): List<Int> = daysOfWeek.split(",").mapNotNull { it.trim().toIntOrNull() }.filter { it in 1..7 }
+
+    /** Maps this Room entity into the pure-domain [Schedule] model. */
+    fun toDomain(): Schedule = Schedule(
+        days = daysList().toSet(),
+        startTime = startTime,
+        endTime = endTime,
+        enabled = enabled,
+        simSlot = simSlot,
+    )
 
     companion object {
         fun daysToString(days: Collection<Int>): String = days.sorted().joinToString(",")

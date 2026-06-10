@@ -61,7 +61,9 @@ class WeyYaScreeningService : CallScreeningService() {
             ScreeningEntryPoint::class.java,
         )
 
-        val number = callDetails.handle?.schemeSpecificPart
+        // A degenerate "tel:" URI can yield "" (empty, not null). Treat blank the same as a
+        // hidden number so both follow the identical decision/record path.
+        val number = callDetails.handle?.schemeSpecificPart?.takeIf { it.isNotBlank() }
         val callSimSlot = entryPoint.simResolver().resolveSlotFromCallDetails(callDetails)
 
         // Android gives onScreenCall a limited window to respond. Cap the I/O so a slow or
@@ -82,7 +84,7 @@ class WeyYaScreeningService : CallScreeningService() {
                     } ?: false,
                     isWhitelisted = number?.let { entryPoint.whitelistDao().isWhitelisted(it) } ?: false,
                     isWithinSchedule = entryPoint.scheduleChecker().isBlockingActive(
-                        entryPoint.scheduleDao().getEnabledSync(),
+                        entryPoint.scheduleDao().getEnabledSync().map { it.toDomain() },
                         callSimSlot = callSimSlot,
                     ),
                 )
@@ -114,20 +116,7 @@ class WeyYaScreeningService : CallScreeningService() {
         val response = when (decision) {
             is CallDecision.Allow -> {
                 if (decision.reason == "bypass" && number != null) {
-                    try {
-                        runBlocking(Dispatchers.IO) {
-                            entryPoint.blockedCallDao().insert(
-                                BlockedCallEntity(
-                                    phoneNumber = number,
-                                    timestamp = System.currentTimeMillis(),
-                                    attemptCount = attemptCount,
-                                    wasEventuallyAllowed = true,
-                                ),
-                            )
-                        }
-                    } catch (e: Exception) {
-                        Log.e("WeyYaScreening", "Failed to record bypass", e)
-                    }
+                    recordCall(entryPoint.blockedCallDao(), number, attemptCount, wasAllowed = true)
                 }
                 CallResponse.Builder()
                     .setDisallowCall(false)
@@ -137,20 +126,7 @@ class WeyYaScreeningService : CallScreeningService() {
                     .build()
             }
             is CallDecision.Reject -> {
-                try {
-                    runBlocking(Dispatchers.IO) {
-                        entryPoint.blockedCallDao().insert(
-                            BlockedCallEntity(
-                                phoneNumber = number,
-                                timestamp = System.currentTimeMillis(),
-                                attemptCount = attemptCount,
-                                wasEventuallyAllowed = false,
-                            ),
-                        )
-                    }
-                } catch (e: Exception) {
-                    Log.e("WeyYaScreening", "Failed to record blocked call", e)
-                }
+                recordCall(entryPoint.blockedCallDao(), number, attemptCount, wasAllowed = false)
                 CallResponse.Builder()
                     .setDisallowCall(true)
                     .setRejectCall(true)
@@ -161,6 +137,29 @@ class WeyYaScreeningService : CallScreeningService() {
         }
 
         respondToCall(callDetails, response)
+    }
+
+    /** Persists a screening outcome. Failures are logged, never propagated to screening. */
+    private fun recordCall(
+        dao: BlockedCallDao,
+        number: String?,
+        attemptCount: Int,
+        wasAllowed: Boolean,
+    ) {
+        try {
+            runBlocking(Dispatchers.IO) {
+                dao.insert(
+                    BlockedCallEntity(
+                        phoneNumber = number,
+                        timestamp = System.currentTimeMillis(),
+                        attemptCount = attemptCount,
+                        wasEventuallyAllowed = wasAllowed,
+                    ),
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("WeyYaScreening", "Failed to record call", e)
+        }
     }
 
     private data class ScreeningParams(

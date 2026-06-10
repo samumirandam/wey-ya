@@ -8,12 +8,11 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.weyya.app.data.prefs.UserPreferences
-import com.weyya.app.domain.model.BlockingMode
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import com.weyya.app.R
+import com.weyya.app.ui.common.labelRes
 import com.weyya.app.util.TimeUtils
 import kotlinx.coroutines.flow.first
 
@@ -42,10 +41,7 @@ object WidgetDataHelper {
         val mode = prefs.blockingMode.first()
         val blockedToday = ep.blockedCallDao().getBlockedCountSince(TimeUtils.todayStartMillis()).first()
 
-        val modeName = when (mode) {
-            BlockingMode.UNKNOWN_CALLERS -> context.getString(R.string.mode_unknown)
-            BlockingMode.ALL_CALLERS -> context.getString(R.string.mode_all)
-        }
+        val modeName = context.getString(mode.labelRes())
 
         return WidgetState(isActive, modeName, blockedToday)
     }

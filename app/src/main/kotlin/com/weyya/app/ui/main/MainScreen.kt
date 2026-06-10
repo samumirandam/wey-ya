@@ -66,6 +66,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.weyya.app.R
 import com.weyya.app.domain.model.BlockingMode
+import com.weyya.app.ui.common.labelRes
 import com.weyya.app.ui.components.BigToggle
 import com.weyya.app.navigation.Routes
 import com.weyya.app.ui.components.StatCard
@@ -427,7 +428,7 @@ private fun ModeSelector(
             shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
         ) {
             Text(
-                stringResource(R.string.mode_unknown),
+                stringResource(BlockingMode.UNKNOWN_CALLERS.labelRes()),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -438,7 +439,7 @@ private fun ModeSelector(
             shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
         ) {
             Text(
-                stringResource(R.string.mode_all),
+                stringResource(BlockingMode.ALL_CALLERS.labelRes()),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
