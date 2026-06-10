@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.detekt)
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -86,6 +87,13 @@ room {
     schemaDirectory("$projectDir/schemas")
 }
 
+detekt {
+    buildUponDefaultConfig = true
+    // Generate/refresh with `./gradlew detektBaseline`. Pre-existing findings live here so they
+    // don't fail unrelated PRs; new findings still gate the build.
+    baseline = file("detekt-baseline.xml")
+}
+
 dependencies {
     // Compose
     val composeBom = platform(libs.compose.bom)
@@ -135,6 +143,10 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.robolectric)
+    testImplementation(libs.mockk)
+
+    // detekt: ktlint-style formatting rules
+    detektPlugins(libs.detekt.formatting)
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.test.manifest)

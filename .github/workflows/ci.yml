@@ -30,6 +30,9 @@ jobs:
       - name: Android lint
         run: ./gradlew lintDebug --stacktrace
 
+      - name: Static analysis (detekt)
+        run: ./gradlew detekt --stacktrace
+
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
 
