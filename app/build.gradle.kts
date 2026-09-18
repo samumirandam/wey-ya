@@ -19,14 +19,14 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.weyya.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.weyya.app"
         minSdk = 29
-        targetSdk = 35
-        versionCode = 8
-        versionName = "1.3.2"
+        targetSdk = 36
+        versionCode = 9
+        versionName = "1.3.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

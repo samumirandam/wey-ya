@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2026-09-18
+
+Compliance release for Google Play's target API requirement. No user-visible change.
+
+### Changed
+
+- Target and compile against Android 16 (API 36). Required by Play to keep publishing updates after 2026-08-31.
+- Android Gradle Plugin 8.7.3 → 8.9.1, the minimum version that supports API 36 without warnings.
+
 ## [1.3.2] - 2026-06-10
 
 Maintenance release: code quality, architecture, and test coverage. No new
