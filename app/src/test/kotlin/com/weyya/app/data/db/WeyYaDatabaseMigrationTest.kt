@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config
  * up in PR diffs.
  */
 @RunWith(RobolectricTestRunner::class)
+// Robolectric needs Java 21 to sandbox SDK 36; CI runs JDK 17. Drop the pin once CI moves to 21.
 @Config(sdk = [34])
 class WeyYaDatabaseMigrationTest {
 

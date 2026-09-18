@@ -4,6 +4,18 @@ All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+Toolchain and library bump after the API 36 compliance release (#14). No user-visible change.
+
+### Changed
+
+- Gradle 8.13 → 9.7.1, AGP 8.9.1 → 9.4.1 (built-in Kotlin: the `org.jetbrains.kotlin.android` plugin is gone and `kotlinOptions` became `kotlin.compilerOptions`), Kotlin 2.1.0 → 2.4.20, KSP → 2.3.12.
+- `compileSdk` 36 → 37: required by Compose 1.12 and Lifecycle 2.11. `targetSdk` stays at 36, so runtime behavior is unchanged.
+- Compose BOM 2026.09.00 (Material3 1.4.0), Room 2.8.5, Hilt 2.60.1, Lifecycle 2.11.0, Navigation 2.10.1, Activity Compose 1.13.0, Glance 1.2.0, DataStore 1.2.1, core-ktx 1.19.0, splashscreen 1.2.0, coroutines 1.11.0.
+- `hiltViewModel()` now comes from `androidx.hilt:hilt-lifecycle-viewmodel-compose` (replaces `hilt-navigation-compose`, where it is deprecated).
+- Test/tooling: Robolectric 4.17, MockK 1.14.11, Truth 1.4.5, Turbine 1.2.1, detekt 1.23.8. The migration test keeps `@Config(sdk = [34])`: Robolectric needs Java 21 to sandbox SDK 36 and CI runs JDK 17.
+
 ## [1.3.3] - 2026-09-18
 
 Compliance release for Google Play's target API requirement. No user-visible change.
