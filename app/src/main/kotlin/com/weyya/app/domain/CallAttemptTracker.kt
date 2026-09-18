@@ -15,6 +15,8 @@ class CallAttemptTracker @Inject constructor() {
         const val MAX_TRACKED_NUMBERS = 100
     }
 
+    // Mutates: every call is counted as an attempt, so call it once per screened call.
+    // Use getCount() for read-only checks.
     fun recordAndCount(phoneNumber: String, windowMinutes: Int): Int {
         val now = timeProvider()
         val cutoff = now - (windowMinutes * MILLIS_PER_MINUTE)
