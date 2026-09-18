@@ -48,7 +48,7 @@ Tooling (detekt + formatting rules, `StringsParityTest`, Room schema export) enf
 
 - Unit tests only, in `app/src/test/`. JUnit4 + Truth; names in backticks as a phrase.
 - ViewModel tests extend `ViewModelTest`, MockK `relaxed = true`, stub every flow before constructing the VM (VMs read flows in initializers). With Turbine, the first item is the `stateIn` default.
-- Robolectric only for migration tests, pinned to `@Config(sdk = [34])` (Robolectric 4.14 lacks 36).
+- Robolectric only for migration tests, pinned to `@Config(sdk = [34])`: Robolectric needs Java 21 to sandbox SDK 36 and CI runs JDK 17.
 
 ## Releases
 
