@@ -66,6 +66,7 @@ class WeyYaScreeningService : CallScreeningService() {
         val number = callDetails.handle?.schemeSpecificPart?.takeIf { it.isNotBlank() }
         val callSimSlot = entryPoint.simResolver().resolveSlotFromCallDetails(callDetails)
 
+        // onScreenCall is synchronous by Android design, so runBlocking here is intentional.
         // Android gives onScreenCall a limited window to respond. Cap the I/O so a slow or
         // stuck DB/contacts query can't hang screening — on timeout we fail open (allow).
         // The Room reads suspend and so are cancellable; ContactsResolver.isContact is a

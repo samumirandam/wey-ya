@@ -878,6 +878,7 @@ private fun TimeSliders(
         Slider(
             value = minute.toFloat(),
             onValueChange = { onMinuteChange(it.roundToInt()) },
+            // 12 positions at 5-minute increments (0, 5 … 55). Intentional, not a bug.
             valueRange = 0f..55f,
             steps = 10,
             colors = colors,
