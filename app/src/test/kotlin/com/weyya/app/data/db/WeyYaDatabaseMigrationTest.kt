@@ -22,7 +22,8 @@ import org.robolectric.annotation.Config
  * Strategy: build the database at an old version by hand, insert data, then open it through
  * Room with all migrations registered. Opening forces the migrations to run AND makes Room
  * validate that the resulting schema matches the current entities (identity hash) — a mismatch
- * throws. No historical schema JSONs are needed (only 5.json is exported).
+ * throws. No historical schema JSONs are needed; `app/schemas/` is tracked so DB changes show
+ * up in PR diffs.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
