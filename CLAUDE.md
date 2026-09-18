@@ -1,10 +1,17 @@
-`domain/` has no Android imports: pure Kotlin, unit-tested in isolation.
+Conventions tooling cannot check (layers, ViewModel state, migrations, strings, tests, releases): `CODING_STANDARDS.md`. Read it before writing or reviewing code.
 
-`WeyYaScreeningService.onScreenCall()` is synchronous by Android design; the `runBlocking` there is intentional, keep it.
+`./gradlew test` rejects `--tests`; filter with `./gradlew testDebugUnitTest --tests "com.weyya.app.domain.*"`.
 
-## Gotchas
+## Agent skills
 
-- Indonesian resources live in `values-in/` (Android legacy code), not `values-id/`.
-- External links use `Intent(ACTION_VIEW)` so they open the system browser and work without the INTERNET permission. The app declares no INTERNET permission; keep it that way.
-- Only unit tests, under `app/src/test/`. No instrumented/UI tests by design.
-- `./gradlew test` rejects `--tests`; filter with `./gradlew testDebugUnitTest --tests "com.weyya.app.domain.*"`.
+### Issue tracker
+
+GitHub Issues (`samumirandam/wey-ya`) via `gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
